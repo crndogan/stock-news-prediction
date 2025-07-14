@@ -34,4 +34,5 @@ jobs:
 
       - name: Run Master Notebook
         run: |
-          jupyter nbconvert --to notebook --execute notebooks/Master_Data_Modeling.ipynb --output notebooks/Master_Data_Modeling_output.ipynb
+           jupyter nbconvert --to notebook --execute notebooks/Master_Data_Modeling.ipynb --output Master_Data_Modeling_output.ipynb
+
