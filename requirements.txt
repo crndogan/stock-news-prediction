@@ -16,3 +16,4 @@ newsdataapi
 tqdm
 yfinance
 requests
+wordcloud
