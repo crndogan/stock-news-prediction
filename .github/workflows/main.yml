@@ -3,10 +3,10 @@ name: Daily Stock News Modeling
 on:
   schedule:
     - cron: '0 2 * * *'  # Runs daily at 2:00 AM UTC = 7:00 PM PDT
-  workflow_dispatch:  # Allows manual run from GitHub UI
+  workflow_dispatch:
 
 jobs:
-  run-notebook:
+  run-pipeline:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,8 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install jupyter nbconvert pandas openpyxl scikit-learn xgboost matplotlib seaborn nltk transformers textblob nrclex
+          pip install jupyter nbconvert pandas openpyxl scikit-learn xgboost matplotlib seaborn nltk transformers textblob nrclex yfinance pytz newsdataapi
 
       - name: Export API Key to environment
         run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
@@ -34,5 +33,4 @@ jobs:
 
       - name: Run Master Notebook
         run: |
-           jupyter nbconvert --to notebook --execute notebooks/Master_Data_Modeling.ipynb --output Master_Data_Modeling_output.ipynb
-
+          jupyter nbconvert --to notebook --execute Master_Data_Modeling.ipynb --output Master_Data_Modeling1_output.ipynb
