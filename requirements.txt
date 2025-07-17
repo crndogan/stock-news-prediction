@@ -16,4 +16,4 @@ newsdataapi
 tqdm
 yfinance
 requests
-wordcloud
+ipython  #required for IPython.display
