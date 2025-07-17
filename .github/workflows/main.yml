@@ -2,7 +2,7 @@ name: Daily Stock News Modeling
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Runs daily at 2:00 AM UTC = 7:00 PM PDT
+    - cron: '0 13 * * *'  # Runs daily at 2:00 AM UTC = 7:00 PM PDT
   workflow_dispatch:
 
 jobs:
