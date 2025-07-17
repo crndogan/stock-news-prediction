@@ -35,10 +35,13 @@ jobs:
         run: |
           jupyter nbconvert --to notebook --execute "notebooks/Master_Data_Modeling.ipynb" --output "Master_Data_Modeling_output.ipynb" --output-dir notebooks
       
+      - name: Show files in workspace
+        run: ls -lhR
+
       - name: Commit and push output notebook
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add notebooks/Master_Data_Modeling_output.ipynb notebooks/*.csv
-          git commit -m "Update output notebook"
+          git add notebooks/Master_Data_Modeling_output.ipynb notebooks/*.csv *.csv *.xlsx *.txt
+          git diff --cached --quiet || git commit -m "Update output notebook"
           git push    
