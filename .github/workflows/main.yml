@@ -3,7 +3,7 @@ name: Daily Stock News Modeling
 
 on:
   schedule:
-    - cron: '0 13 * * *'    # 13:00 UTC = 06:00 PDT
+    - cron: '0 6 * * *'    # 11pm pacific
   workflow_dispatch: {}
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
       - name: Debug — show scraped date
         run: |
           grep -R "Scraping news for date" notebooks/Master_Data_Modeling_output.ipynb \
-            || echo "❌ scrape debug line not found!"
+            || echo "scrape debug line not found!"
 
       - name: Show workspace files
         run: ls -R .
