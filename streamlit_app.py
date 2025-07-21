@@ -4,70 +4,82 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
 st.set_page_config(page_title="Daily Stock News Dashboard", layout="wide")
-st.title("Daily Stock News Dashboard")
+st.title("📊 Daily Stock News Dashboard")
 
-#Load Data
+# --- Data Loader ---
 @st.cache_data
 def load_data():
-    sentiment = pd.read_csv("sentiment_scores.csv", parse_dates=["date"] )
-    predictions = pd.read_csv("BI_prediction_results.csv", parse_dates=["date"] )
-    topics = pd.read_csv("daily_topic_distribution.csv", parse_dates=["date"] )
-    wordfreq = pd.read_csv("topic_up_down.csv")
-    return sentiment, predictions, topics, wordfreq
+    tone   = pd.read_excel("stock_news_tone.xlsx",  parse_dates=["date"])
+    hist   = pd.read_csv(  "BI_prediction_results.csv", parse_dates=["date"])
+    tomorrow = pd.read_csv("tomorrow_prediction.csv",   parse_dates=["date"])
+    topics = pd.read_csv(  "topic_modeling_BI.csv",     parse_dates=["date"])
+    wf     = pd.read_csv(  "topic_up_down.csv")  # labels = "Up"/"Down"
+    return tone, hist, tomorrow, topics, wf
 
-sent_df, pred_df, topics_df, wf_df = load_data()
+tone_df, hist_preds_df, tomorrow_df, topics_df, wf_df = load_data()
 
-# Sidebar: Date selector
-max_date = sent_df["date"].max().date()
-selected_date = st.sidebar.date_input("Select date", max_date, min_value=sent_df["date"].min().date(), max_value=max_date)
+# --- Sidebar: Date Selector ---
+max_date = tone_df["date"].max().date()
+min_date = tone_df["date"].min().date()
+selected_date = st.sidebar.date_input("Select date", max_date, min_value=min_date, max_value=max_date)
 
-# --- Sentiment Trend ---
-st.subheader("Sentiment Scores Over Time")
-plot_df = sent_df.set_index("date")["sentiment_score"].loc[:pd.to_datetime(selected_date)]
-st.line_chart(plot_df)
-
-# --- Tomorrow's Prediction ---
-st.subheader("Prediction for Next Trading Day")
-today = pd.to_datetime(selected_date)
-tomorrow_pred = pred_df[pred_df["date"] == today]
-if not tomorrow_pred.empty:
-    pred = tomorrow_pred.iloc[0]
-    label = pred.get("predicted_label", "N/A")
-    prob = pred.get("predicted_prob", None)
-    if pd.notna(prob):
-        st.metric(label="Change Prediction", value=label, delta=f"{prob:.2f}")
-    else:
-        st.metric(label="Change Prediction", value=label)
+# --- 1) Price & Return Metrics ---
+st.subheader(f"Price & Return on {selected_date}")
+day = tone_df[tone_df["date"] == pd.to_datetime(selected_date)]
+if not day.empty:
+    close = day["close_price"].iloc[0]
+    ret   = day["daily_return"].iloc[0]
+    st.metric("Close Price", f"${close:,.2f}", delta=f"{ret:.2%}")
 else:
-    st.info("No prediction available for the selected date.")
+    st.info("No price data for selected date.")
 
-# --- Topic Distribution ---
-st.subheader(f"Topic Distribution on {selected_date}")
-topic_row = topics_df[topics_df["date"] == pd.to_datetime(selected_date)]
-if not topic_row.empty:
-    weights = topic_row.drop(columns=["date", "dominant_topic"], errors="ignore").T
-    weights.columns = ["weight"]
-    fig, ax = plt.subplots()
-    weights.plot(kind="bar", legend=False, ax=ax)
-    ax.set_ylabel("Average Topic Weight")
-    ax.set_xlabel("Topic")
-    st.pyplot(fig)
+# --- 2) Sentiment Trend ---
+st.subheader("Sentiment Compound Over Time")
+sent_ts = tone_df.set_index("date")["sent_compound"]
+st.line_chart(sent_ts)
+
+# --- 3) Tomorrow's Prediction ---
+st.subheader("Next Trading Day Prediction")
+tom = tomorrow_df[tomorrow_df["date"] == pd.to_datetime(selected_date)]
+if not tom.empty:
+    mov  = tom["predicted_movement"].iloc[0]
+    conf = tom["confidence"].iloc[0]
+    st.metric("Predicted Movement", mov, f"{conf:.1%}")
 else:
-    st.info("No topic data for the selected date.")
+    st.info("No tomorrow-prediction available for that date.")
 
-# --- Word Clouds (Optional) ---
-if st.checkbox("Show Word Clouds for Up/Down Headlines"):
-    st.markdown("**Up Day Headlines**")
-    up_wc = WordCloud(width=400, height=200).generate_from_frequencies(
-        dict(wf_df[wf_df["market_label"]=="Up"]["count"].values)
-    )
-    st.image(up_wc.to_array(), use_column_width=False)
-    st.markdown("**Down Day Headlines**")
-    down_wc = WordCloud(width=400, height=200).generate_from_frequencies(
-        dict(wf_df[wf_df["market_label"]=="Down"]["count"].values)
-    )
-    st.image(down_wc.to_array(), use_column_width=False)
+# --- 4) Historical Model Confidence ---
+st.subheader("Historical Prediction Confidence")
+hist_ts = hist_preds_df.set_index("date")["prediction_confidence"]
+st.line_chart(hist_ts)
+
+# --- 5) Topic of the Day ---
+st.subheader("Topic Analysis")
+tp = topics_df[topics_df["date"] == pd.to_datetime(selected_date)]
+if not tp.empty:
+    dom = tp["Dominant_Topic"].iloc[0]
+    kws = tp["Topic_Keywords"].iloc[0]
+    st.write(f"**Dominant Topic #{dom}:** {kws}")
+    st.markdown("**Sample Headlines:**")
+    st.write(tp["Headline"].tolist())
+else:
+    st.info("No topic data for that date.")
+
+# --- 6) Word Clouds for Up/Down Headlines ---
+if st.checkbox("Show Word Clouds (Up vs. Down Headlines)"):
+    up_freq   = dict(wf_df[wf_df["label"]=="Up"]  [["word","count"]].values)
+    down_freq = dict(wf_df[wf_df["label"]=="Down"][["word","count"]].values)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Up-Day Word Cloud**")
+        wc1 = WordCloud(width=400, height=200).generate_from_frequencies(up_freq)
+        st.image(wc1.to_array(), use_column_width=True)
+    with col2:
+        st.markdown("**Down-Day Word Cloud**")
+        wc2 = WordCloud(width=400, height=200).generate_from_frequencies(down_freq)
+        st.image(wc2.to_array(), use_column_width=True)
 
 # --- Footer ---
 st.sidebar.markdown("---")
-st.sidebar.write("Data auto-updated via GitHub Actions")
+st.sidebar.write("Data automatically updated via GitHub Actions daily at 11 PM PT")
