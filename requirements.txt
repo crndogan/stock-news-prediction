@@ -19,4 +19,7 @@ requests
 ipython
 gensim
 pyldavis
+streamlit
+gensim
+pyldavis
 
