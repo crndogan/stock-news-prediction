@@ -61,5 +61,6 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add notebooks/Master_Data_Modeling_output.ipynb notebooks/*.csv *.xlsx *.txt
-          git commit -m "chore: update output notebook and data" || echo "No changes to commit"
+          git add runtime.txt
+          git commit -m "chore: pin Streamlit Cloud to Python 3.10 for SciPy compatibility"
           git push
