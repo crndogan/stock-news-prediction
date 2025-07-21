@@ -3,7 +3,7 @@ name: Daily Stock News Modeling
 
 on:
   schedule:
-    - cron: '0 6 * * *'    # 11pm pacific
+    - cron: '0 6 * * *'    # 11 PM Pacific (06:00 UTC)
   workflow_dispatch: {}
 
 jobs:
