@@ -17,4 +17,6 @@ tqdm
 yfinance
 requests
 ipython
+gensim
+pyldavis
 
