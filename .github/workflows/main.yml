@@ -1,10 +1,10 @@
-#.github/workflows/main.yml
-name: "Daily Stock News Modeling"
+# .github/workflows/daily_stock_news_modeling.yml
+name: Daily Stock News Modeling
 
 on:
   schedule:
     - cron: '0 13 * * *'    # 13:00 UTC = 06:00 PDT
-  workflow_dispatch: {}     # allow manual trigger
+  workflow_dispatch: {}
 
 jobs:
   run-pipeline:
@@ -32,20 +32,25 @@ jobs:
           python -m nltk.downloader punkt vader_lexicon averaged_perceptron_tagger wordnet
           python -m textblob.download_corpora
 
-      - name: Execute Master_Data_Modeling Notebook
+      - name: Execute Master Notebook (force full rerun)
         run: |
+          # ensure output folder exists
+          mkdir -p notebooks
+
+          # clear old outputs and re-execute all cells
           jupyter nbconvert \
             --to notebook \
             --execute notebooks/Master_Data_Modeling.ipynb \
             --ExecutePreprocessor.kernel_name=python3 \
             --ExecutePreprocessor.timeout=-1 \
             --ClearOutputPreprocessor.enabled=True \
-            --output notebooks/Master_Data_Modeling_output.ipynb
+            --output-dir notebooks \
+            --output Master_Data_Modeling_output.ipynb
 
       - name: Debug — show scraped date
         run: |
           grep -R "Scraping news for date" notebooks/Master_Data_Modeling_output.ipynb \
-            || echo "scrape debug line not found!"
+            || echo "❌ scrape debug line not found!"
 
       - name: Show workspace files
         run: ls -R .
