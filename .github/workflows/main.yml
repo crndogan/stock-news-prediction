@@ -2,7 +2,7 @@ name: Daily Stock News Modeling
 
 on:
   schedule:
-    - cron: '0 13 * * *'  # Runs daily at 2:00 AM UTC = 7:00 PM PDT
+    - cron: '0 13 * * *'      # Runs daily at 13:00 UTC (06:00 PDT)
   workflow_dispatch:
 
 jobs:
@@ -31,21 +31,27 @@ jobs:
           python -m nltk.downloader punkt vader_lexicon averaged_perceptron_tagger wordnet
           python -m textblob.download_corpora
 
-      - name: Run Master Notebook
+      - name: Run Master Notebook (force re-run all cells)
         run: |
-          jupyter nbconvert --to notebook \
-            --execute "notebooks/Master_Data_Modeling.ipynb" \
+          jupyter nbconvert \
+            --to notebook \
+            --execute notebooks/Master_Data_Modeling.ipynb \
             --ExecutePreprocessor.kernel_name=python3 \
-            --output "Master_Data_Modeling_output.ipynb" \
-            --output-dir notebooks
+            --ExecutePreprocessor.timeout=-1 \
+            --ClearOutputPreprocessor.enabled=True \
+            --output notebooks/Master_Data_Modeling_output.ipynb
+
+      - name: Debug: show scrape date in executed notebook
+        run: |
+          grep -R "Scraping news for date" notebooks/Master_Data_Modeling_output.ipynb || echo "❌ scrape debug line not found!"
 
       - name: Show files in workspace
         run: ls -lhR
 
-      - name: Commit and push output notebook
+      - name: Commit and push updated outputs
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add notebooks/Master_Data_Modeling_output.ipynb notebooks/*.csv *.csv *.xlsx *.txt
-          git diff --cached --quiet || git commit -m "Update output notebook"
-
+          git diff --cached --quiet || git commit -m "chore: update output notebook and data"
+          git push
