@@ -1,9 +1,10 @@
-name: Daily Stock News Modeling
+#.github/workflows/main.yml
+name: "Daily Stock News Modeling"
 
 on:
   schedule:
-    - cron: '0 13 * * *'      # Runs daily at 13:00 UTC (06:00 PDT)
-  workflow_dispatch:
+    - cron: '0 13 * * *'    # 13:00 UTC = 06:00 PDT
+  workflow_dispatch: {}     # allow manual trigger
 
 jobs:
   run-pipeline:
@@ -13,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -26,12 +27,12 @@ jobs:
       - name: Export API Key to environment
         run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
 
-      - name: Download NLTK and TextBlob corpora
+      - name: Download NLTK & TextBlob corpora
         run: |
           python -m nltk.downloader punkt vader_lexicon averaged_perceptron_tagger wordnet
           python -m textblob.download_corpora
 
-      - name: Run Master Notebook (force re-run all cells)
+      - name: Execute Master_Data_Modeling Notebook
         run: |
           jupyter nbconvert \
             --to notebook \
@@ -41,17 +42,19 @@ jobs:
             --ClearOutputPreprocessor.enabled=True \
             --output notebooks/Master_Data_Modeling_output.ipynb
 
-      - name: Debug: show scrape date in executed notebook
+      - name: Debug — show scraped date
         run: |
-          grep -R "Scraping news for date" notebooks/Master_Data_Modeling_output.ipynb || echo "❌ scrape debug line not found!"
+          grep -R "Scraping news for date" notebooks/Master_Data_Modeling_output.ipynb \
+            || echo "scrape debug line not found!"
 
-      - name: Show files in workspace
-        run: ls -lhR
+      - name: Show workspace files
+        run: ls -R .
 
-      - name: Commit and push updated outputs
+      - name: Commit & push outputs
+        if: github.ref == 'refs/heads/main'
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add notebooks/Master_Data_Modeling_output.ipynb notebooks/*.csv *.csv *.xlsx *.txt
-          git diff --cached --quiet || git commit -m "chore: update output notebook and data"
+          git add notebooks/Master_Data_Modeling_output.ipynb notebooks/*.csv *.xlsx *.txt
+          git commit -m "chore: update output notebook and data" || echo "No changes to commit"
           git push
