@@ -9,7 +9,6 @@ st.title("Stock News & Market Movement Prediction")
 
 # --- Load Data ---
 @st.cache_data
-
 def load_data():
     base = "notebooks"
     tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
@@ -27,7 +26,7 @@ today = valid_sentiment["date"].max()
 st.sidebar.info(f"Latest data: {today.date()}")
 
 # --- Prediction ---
-st.header(" 📈 Next Trading Day Prediction")
+st.header("1. Next Trading Day Prediction")
 pred_row = tomorrow_df[tomorrow_df["date"] == today]
 if not pred_row.empty:
     st.metric("Predicted Movement", pred_row["predicted_movement"].iloc[0],
@@ -36,19 +35,19 @@ else:
     st.warning("No prediction available for today.")
 
 # --- Sentiment Summary ---
-st.header("🎯 Classification & Sentiment Summary")
+st.header("2. Classification & Sentiment Summary")
 today_sent = tone_df[tone_df["date"] == today]
 if not today_sent.empty:
     cols = st.columns(4)
     cols[0].metric("Label", today_sent["label"].iloc[0])
-    cols[1].metric("😐 Compound Sentiment", round(today_sent["sent_compound"].iloc[0], 3))
-    cols[2].metric("😊 Positive", today_sent["emo_positive"].iloc[0])
-    cols[3].metric("😠 Negative", today_sent["emo_negative"].iloc[0])
+    cols[1].metric("Compound Sentiment", round(today_sent["sent_compound"].iloc[0], 3))
+    cols[2].metric("Positive", today_sent["emo_positive"].iloc[0])
+    cols[3].metric("Negative", today_sent["emo_negative"].iloc[0])
 else:
     st.info("No sentiment data available.")
 
 # --- Historical Classification Chart & Metrics ---
-st.header("🔍 Historical Prediction Performance")
+st.header("3. Historical Prediction Performance")
 selected_date = st.sidebar.date_input("Select a date to view history up to", value=today,
                                       min_value=hist_df["date"].min().date(),
                                       max_value=hist_df["date"].max().date())
@@ -67,10 +66,11 @@ ax.legend()
 st.pyplot(fig)
 
 # --- Classification Metrics ---
-y_true = filtered_hist["actual_numeric"]
-y_pred = filtered_hist["predicted_numeric"]
+metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
+y_true = metrics_df["actual_numeric"]
+y_pred = metrics_df["predicted_numeric"]
 
-if y_true.nunique() == 2:
+if len(y_true) > 0 and y_true.nunique() == 2:
     acc = accuracy_score(y_true, y_pred)
     f1 = f1_score(y_true, y_pred)
     prec = precision_score(y_true, y_pred)
@@ -89,10 +89,10 @@ if y_true.nunique() == 2:
     disp.plot(ax=ax_cm, cmap="Blues", colorbar=False)
     st.pyplot(fig_cm)
 else:
-    st.info("Not enough class variation to compute metrics.")
+    st.info("Not enough class variation or valid data to compute metrics.")
 
 # --- S&P 500 Daily Table ---
-st.header("🧠 Market Close Data")
+st.header("4. Market Close Data")
 sp_today = sp500_df[sp500_df["date"] == today]
 if not sp_today.empty:
     st.dataframe(sp_today)
@@ -100,7 +100,7 @@ else:
     st.info("No S&P data available for today.")
 
 # --- Topic Modeling ---
-st.header("📋 Topic of the Day")
+st.header("5. Topic of the Day")
 topic_today = topics_df[topics_df["date"] == today]
 if not topic_today.empty:
     st.write(f"**Topic #{topic_today['Dominant_Topic'].iloc[0]}**: {topic_today['Topic_Keywords'].iloc[0]}")
@@ -109,4 +109,3 @@ if not topic_today.empty:
         st.write(f"- {h}")
 else:
     st.info("No topic modeling data available for today.")
-
