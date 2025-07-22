@@ -57,8 +57,8 @@ filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
 fig, ax = plt.subplots(figsize=(10, 4))
-ax.plot(filtered_hist["date"], filtered_hist["actual_numeric"], label="Actual", color="green")
-ax.plot(filtered_hist["date"], filtered_hist["predicted_numeric"], label="Predicted", color="red", linestyle="--")
+ax.scatter(filtered_hist["date"], filtered_hist["actual_numeric"], label="Actual", color="green", marker='o')
+ax.scatter(filtered_hist["date"], filtered_hist["predicted_numeric"], label="Predicted", color="red", marker='x')
 ax.set_title("Actual vs Predicted (Up = 1, Down = 0)")
 ax.set_ylabel("Label")
 ax.set_xlabel("Date")
@@ -84,9 +84,10 @@ if len(y_true) > 0 and y_true.nunique() == 2:
     - **Recall:** {rec:.2f}
     """)
 
-    fig_cm, ax_cm = plt.subplots(figsize=(4, 3))
+    fig_cm, ax_cm = plt.subplots(figsize=(2.5, 2.5))
     disp = ConfusionMatrixDisplay(confusion_matrix(y_true, y_pred), display_labels=["Down", "Up"])
     disp.plot(ax=ax_cm, cmap="Blues", colorbar=False)
+    ax_cm.set_title("Confusion Matrix", fontsize=10)
     st.pyplot(fig_cm)
 else:
     st.info("Not enough class variation or valid data to compute metrics.")
