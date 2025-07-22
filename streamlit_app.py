@@ -24,8 +24,9 @@ tone_df, hist_df, tomorrow_df, topics_df, wf_df = load_data()
 # ── 0) Performance Metrics ───────────────────────────────────────────────────
 with st.expander("Performance Metrics ▶"):
     # compute global classification metrics
-    y_true = hist_df["actual_label"].dropna()
-    y_pred = hist_df.loc[y_true.index, "predicted_label"]
+    valid = hist_df.dropna(subset=["actual_label", "predicted_label"])
+    y_true = valid["actual_label"]
+    y_pred = valid["predicted_label"]
     metrics = {
         "Accuracy":  accuracy_score(y_true, y_pred),
         "Precision": precision_score(y_true, y_pred, pos_label="Up"),
@@ -38,9 +39,9 @@ with st.expander("Performance Metrics ▶"):
         col.metric(name, f"{val:.3f}")
 
     # deep dive: monthly accuracy
-    hist_df["month"] = hist_df["date"].dt.to_period("M").dt.to_timestamp()
+    valid["month"] = valid["date"].dt.to_period("M").dt.to_timestamp()
     monthly_acc = (
-        hist_df
+        valid
         .groupby("month")
         .apply(lambda d: accuracy_score(d["actual_label"], d["predicted_label"]))
         .reset_index(name="accuracy")
