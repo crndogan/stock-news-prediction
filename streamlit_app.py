@@ -109,7 +109,8 @@ if not sp_today.empty:
     st.dataframe(sp_today)
 
     fig2, ax2 = plt.subplots(figsize=(10, 3))
-    ax2.plot(sp500_df["date"], sp500_df["close"], color="blue")
+    col_name = "Close" if "Close" in sp500_df.columns else sp500_df.columns[-1]  # fallback to last column
+    ax2.plot(sp500_df["date"], sp500_df[col_name], color="blue")
     ax2.set_title("S&P 500 Closing Price Trend")
     ax2.set_xlabel("Date")
     ax2.set_ylabel("Close Price")
@@ -139,13 +140,13 @@ wc_up = WordCloud(background_color='white', colormap='Greens').generate(text_up)
 wc_down = WordCloud(background_color='white', colormap='Reds').generate(text_down)
 
 st.subheader("Topics Trending Up")
-fig_up, ax_up = plt.subplots()
+fig_up, ax_up = plt.subplots(figsize=(6, 4))
 ax_up.imshow(wc_up, interpolation='bilinear')
 ax_up.axis("off")
 st.pyplot(fig_up)
 
 st.subheader("Topics Trending Down")
-fig_down, ax_down = plt.subplots()
+fig_down, ax_down = plt.subplots(figsize=(6, 4))
 ax_down.imshow(wc_down, interpolation='bilinear')
 ax_down.axis("off")
 st.pyplot(fig_down)
