@@ -13,10 +13,10 @@ st.title("Stock News & Market Movement Prediction")
 def load_data():
     base = "notebooks"
     tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
-    hist = pd.read_csv(f"{base}/BI_prediction_results.csv", parse_dates=["date"])
+    hist = pd.read_csv(f"{base}/prediction_results.csv", parse_dates=["date"])
     prices = pd.read_csv(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
     tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
-    topics = pd.read_csv(f"{base}/topic_modeling_BI.csv", parse_dates=["date"])
+    topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
     return tone, hist, prices, tomorrow, topics
 
 tone_df, hist_df, sp500_df, tomorrow_df, topics_df = load_data()
