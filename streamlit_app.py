@@ -11,11 +11,12 @@ st.title("📊 Daily Stock News Dashboard")
 # ── Data Loader ──────────────────────────────────────────────────────────────
 @st.cache_data(ttl=3600)
 def load_data():
-    tone     = pd.read_excel("stock_news_tone.xlsx",          parse_dates=["date"])
-    hist     = pd.read_csv("BI_prediction_results.csv",       parse_dates=["date"])
-    tomorrow = pd.read_csv("tomorrow_prediction.csv",         parse_dates=["date"])
-    topics   = pd.read_csv("topic_modeling_BI.csv",           parse_dates=["date"])
-    wf       = pd.read_csv("topic_up_down.csv")
+    base     = "notebooks"
+    tone     = pd.read_excel(f"{base}/stock_news_tone.xlsx",          parse_dates=["date"])
+    hist     = pd.read_csv(f"{base}/BI_prediction_results.csv",       parse_dates=["date"])
+    tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv",         parse_dates=["date"])
+    topics   = pd.read_csv(f"{base}/topic_modeling_BI.csv",           parse_dates=["date"])
+    wf       = pd.read_csv(f"{base}/topic_up_down.csv")
     return tone, hist, tomorrow, topics, wf
 
 tone_df, hist_df, tomorrow_df, topics_df, wf_df = load_data()
