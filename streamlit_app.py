@@ -2,9 +2,20 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
+st.markdown("""
+    <style>
+        .main {
+            background-color: #eaf4fb;
+        }
+        .block-container {
+            padding-top: 1rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("Stock News & Market Movement Prediction")
 
 # --- Load Data ---
@@ -24,6 +35,9 @@ tone_df, hist_df, sp500_df, tomorrow_df, topics_df = load_data()
 valid_sentiment = tone_df[tone_df["emo_positive"] > 0]
 today = valid_sentiment["date"].max()
 st.sidebar.info(f"Latest data: {today.date()}")
+
+st.sidebar.markdown("### 💡 Daily Tip")
+st.sidebar.success("Use the date filter below to view model behavior on past days!")
 
 # --- Prediction ---
 st.header("1. Next Trading Day Prediction")
@@ -83,12 +97,6 @@ if len(y_true) > 0 and y_true.nunique() == 2:
     - **Precision:** {prec:.2f}  
     - **Recall:** {rec:.2f}
     """)
-
-    fig_cm, ax_cm = plt.subplots(figsize=(0.5, 0.5))
-    disp = ConfusionMatrixDisplay(confusion_matrix(y_true, y_pred), display_labels=["Down", "Up"])
-    disp.plot(ax=ax_cm, cmap="Blues", colorbar=False)
-    ax_cm.set_title("Confusion Matrix", fontsize=1)
-    st.pyplot(fig_cm)
 else:
     st.info("Not enough class variation or valid data to compute metrics.")
 
@@ -107,6 +115,6 @@ if not topic_today.empty:
     st.write(f"**Topic #{topic_today['Dominant_Topic'].iloc[0]}**: {topic_today['Topic_Keywords'].iloc[0]}")
     st.markdown("**Sample Headlines:**")
     for h in topic_today["Headline"].tolist():
-        st.write(f"- {h}")
+        st.markdown(f"<div style='background-color:#d9eaf7; padding:6px; margin:4px; border-radius:4px;'>{h}</div>", unsafe_allow_html=True)
 else:
     st.info("No topic modeling data available for today.")
