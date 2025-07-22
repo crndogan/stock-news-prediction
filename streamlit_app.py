@@ -84,10 +84,10 @@ if len(y_true) > 0 and y_true.nunique() == 2:
     - **Recall:** {rec:.2f}
     """)
 
-    fig_cm, ax_cm = plt.subplots(figsize=(1.5, 1.5))
+    fig_cm, ax_cm = plt.subplots(figsize=(0.5, 0.5))
     disp = ConfusionMatrixDisplay(confusion_matrix(y_true, y_pred), display_labels=["Down", "Up"])
     disp.plot(ax=ax_cm, cmap="Blues", colorbar=False)
-    ax_cm.set_title("Confusion Matrix", fontsize=3)
+    ax_cm.set_title("Confusion Matrix", fontsize=1)
     st.pyplot(fig_cm)
 else:
     st.info("Not enough class variation or valid data to compute metrics.")
