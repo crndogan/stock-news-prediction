@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from wordcloud import WordCloud
 
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
 st.markdown("""
@@ -27,9 +28,10 @@ def load_data():
     prices = pd.read_csv(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
     tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
     topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
-    return tone, hist, prices, tomorrow, topics
+    topic_change = pd.read_csv(f"{base}/topic_up_down.csv")
+    return tone, hist, prices, tomorrow, topics, topic_change
 
-tone_df, hist_df, sp500_df, tomorrow_df, topics_df = load_data()
+tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data()
 
 # --- Use max valid sentiment date ---
 valid_sentiment = tone_df[tone_df["emo_positive"] > 0]
@@ -100,11 +102,18 @@ if len(y_true) > 0 and y_true.nunique() == 2:
 else:
     st.info("Not enough class variation or valid data to compute metrics.")
 
-# --- S&P 500 Daily Table ---
+# --- S&P 500 Daily Table & Price Trend ---
 st.header("4. Market Close Data")
 sp_today = sp500_df[sp500_df["date"] == today]
 if not sp_today.empty:
     st.dataframe(sp_today)
+
+    fig2, ax2 = plt.subplots(figsize=(10, 3))
+    ax2.plot(sp500_df["date"], sp500_df["close"], color="blue")
+    ax2.set_title("S&P 500 Closing Price Trend")
+    ax2.set_xlabel("Date")
+    ax2.set_ylabel("Close Price")
+    st.pyplot(fig2)
 else:
     st.info("No S&P data available for today.")
 
@@ -112,9 +121,31 @@ else:
 st.header("5. Topic of the Day")
 topic_today = topics_df[topics_df["date"] == today]
 if not topic_today.empty:
-    st.write(f"**Topic #{topic_today['Dominant_Topic'].iloc[0]}**: {topic_today['Topic_Keywords'].iloc[0]}")
-    st.markdown("**Sample Headlines:**")
-    for h in topic_today["Headline"].tolist():
-        st.markdown(f"<div style='background-color:#d9eaf7; padding:6px; margin:4px; border-radius:4px;'>{h}</div>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style='padding: 10px; background-color: #cce5ff; border-radius: 6px; width:fit-content;'>
+        <b>Topic #{topic_today['Dominant_Topic'].iloc[0]}</b>: {topic_today['Topic_Keywords'].iloc[0]}
+    </div>
+    """, unsafe_allow_html=True)
 else:
     st.info("No topic modeling data available for today.")
+
+# --- WordCloud of Up & Down Topics ---
+st.header("6. Topic Trends WordCloud")
+topic_change_df.dropna(subset=["Topic", "Direction"], inplace=True)
+text_up = " ".join(topic_change_df[topic_change_df["Direction"] == "Up"]["Topic"].astype(str))
+text_down = " ".join(topic_change_df[topic_change_df["Direction"] == "Down"]["Topic"].astype(str))
+
+wc_up = WordCloud(background_color='white', colormap='Greens').generate(text_up)
+wc_down = WordCloud(background_color='white', colormap='Reds').generate(text_down)
+
+st.subheader("Topics Trending Up")
+fig_up, ax_up = plt.subplots()
+ax_up.imshow(wc_up, interpolation='bilinear')
+ax_up.axis("off")
+st.pyplot(fig_up)
+
+st.subheader("Topics Trending Down")
+fig_down, ax_down = plt.subplots()
+ax_down.imshow(wc_down, interpolation='bilinear')
+ax_down.axis("off")
+st.pyplot(fig_down)
