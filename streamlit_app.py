@@ -48,7 +48,7 @@ else:
     st.info("No sentiment data available.")
 
 # --- Historical Classification Chart & Metrics ---
-st.header("📉 Historical Prediction Performance")
+st.header("🔍 Historical Prediction Performance")
 selected_date = st.sidebar.date_input("Select a date to view history up to", value=today,
                                       min_value=hist_df["date"].min().date(),
                                       max_value=hist_df["date"].max().date())
