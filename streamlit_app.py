@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 # ── Page config ─────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Daily Stock News Dashboard", layout="wide")
-st.title("📊 Daily Stock News Dashboard")
+st.title("📈 Daily Stock News Dashboard")
 
 # ── Data Loader ──────────────────────────────────────────────────────────────
 @st.cache_data(ttl=3600)
@@ -17,7 +17,7 @@ def load_data():
     tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv",         parse_dates=["date"])
     topics   = pd.read_csv(f"{base}/topic_modeling_BI.csv",           parse_dates=["date"])
     wf       = pd.read_csv(f"{base}/topic_up_down.csv")
-    prices   = pd.read_csv(f"{base}/sp500_prices_master.csv",         parse_dates=["date"])
+    prices   = pd.read_csv(f"{base}/sp500_cleaned.csv",         parse_dates=["date"])
     return tone, hist, tomorrow, topics, wf, prices
 
 tone_df, hist_df, tomorrow_df, topics_df, wf_df, prices_df = load_data()
