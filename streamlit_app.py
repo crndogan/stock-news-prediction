@@ -5,7 +5,10 @@ from datetime import datetime
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from wordcloud import WordCloud
 
+# --- Streamlit page setup ---
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
+
+# --- CSS for themes ---
 st.markdown("""
     <style>
         .main {
@@ -14,6 +17,9 @@ st.markdown("""
         .block-container {
             padding-top: 1rem;
         }
+        .sidebar .sidebar-content {
+            background-color: #d1ecf1;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -21,6 +27,7 @@ st.title("Stock News & Market Movement Prediction")
 
 # --- Load Data ---
 @st.cache_data
+
 def load_data():
     base = "notebooks"
     tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
@@ -38,8 +45,12 @@ valid_sentiment = tone_df[tone_df["emo_positive"] > 0]
 today = valid_sentiment["date"].max()
 st.sidebar.info(f"Latest data: {today.date()}")
 
-st.sidebar.markdown("### 💡 Daily Tip")
-st.sidebar.success("Use the date filter below to view model behavior on past days!")
+# --- Sidebar: advanced filters ---
+st.sidebar.markdown("### 🔍 Filters")
+st.sidebar.markdown("Use the filters below to refine analysis")
+
+selected_topic = st.sidebar.selectbox("Filter by Topic", options=["All"] + sorted(topics_df['Dominant_Topic'].unique()))
+selected_sentiment = st.sidebar.slider("Filter by Compound Sentiment", min_value=-1.0, max_value=1.0, value=(-1.0, 1.0))
 
 # --- Prediction ---
 st.header("1. Next Trading Day Prediction")
@@ -109,7 +120,7 @@ if not sp_today.empty:
     st.dataframe(sp_today)
 
     fig2, ax2 = plt.subplots(figsize=(10, 3))
-    col_name = "Close" if "Close" in sp500_df.columns else sp500_df.columns[-1]  # fallback to last column
+    col_name = "Close" if "Close" in sp500_df.columns else sp500_df.columns[-1]
     ax2.plot(sp500_df["date"], sp500_df[col_name], color="blue")
     ax2.set_title("S&P 500 Closing Price Trend")
     ax2.set_xlabel("Date")
@@ -139,14 +150,17 @@ text_down = " ".join(topic_change_df[topic_change_df["Direction"] == "Down"]["To
 wc_up = WordCloud(background_color='white', colormap='Greens').generate(text_up)
 wc_down = WordCloud(background_color='white', colormap='Reds').generate(text_down)
 
-st.subheader("Topics Trending Up")
-fig_up, ax_up = plt.subplots(figsize=(6, 4))
-ax_up.imshow(wc_up, interpolation='bilinear')
-ax_up.axis("off")
-st.pyplot(fig_up)
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("Topics Trending Up")
+    fig_up, ax_up = plt.subplots(figsize=(6, 4))
+    ax_up.imshow(wc_up, interpolation='bilinear')
+    ax_up.axis("off")
+    st.pyplot(fig_up)
 
-st.subheader("Topics Trending Down")
-fig_down, ax_down = plt.subplots(figsize=(6, 4))
-ax_down.imshow(wc_down, interpolation='bilinear')
-ax_down.axis("off")
-st.pyplot(fig_down)
+with col2:
+    st.subheader("Topics Trending Down")
+    fig_down, ax_down = plt.subplots(figsize=(6, 4))
+    ax_down.imshow(wc_down, interpolation='bilinear')
+    ax_down.axis("off")
+    st.pyplot(fig_down)
