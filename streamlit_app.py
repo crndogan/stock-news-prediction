@@ -27,7 +27,6 @@ st.title("Stock News & Market Movement Prediction")
 
 # --- Load Data ---
 @st.cache_data
-
 def load_data():
     base = "notebooks"
     tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
@@ -120,7 +119,7 @@ if not sp_today.empty:
     st.dataframe(sp_today)
 
     fig2, ax2 = plt.subplots(figsize=(10, 3))
-    col_name = "Close" if "Close" in sp500_df.columns else sp500_df.columns[-1]
+    col_name = next((col for col in ["Close", "close"] if col in sp500_df.columns), sp500_df.columns[-1])
     ax2.plot(sp500_df["date"], sp500_df[col_name], color="blue")
     ax2.set_title("S&P 500 Closing Price Trend")
     ax2.set_xlabel("Date")
@@ -143,24 +142,27 @@ else:
 
 # --- WordCloud of Up & Down Topics ---
 st.header("6. Topic Trends WordCloud")
-topic_change_df.dropna(subset=["Topic", "Direction"], inplace=True)
-text_up = " ".join(topic_change_df[topic_change_df["Direction"] == "Up"]["Topic"].astype(str))
-text_down = " ".join(topic_change_df[topic_change_df["Direction"] == "Down"]["Topic"].astype(str))
+if "Topic" in topic_change_df.columns and "Direction" in topic_change_df.columns:
+    topic_change_df.dropna(subset=["Topic", "Direction"], inplace=True)
+    text_up = " ".join(topic_change_df[topic_change_df["Direction"] == "Up"]["Topic"].astype(str))
+    text_down = " ".join(topic_change_df[topic_change_df["Direction"] == "Down"]["Topic"].astype(str))
 
-wc_up = WordCloud(background_color='white', colormap='Greens').generate(text_up)
-wc_down = WordCloud(background_color='white', colormap='Reds').generate(text_down)
+    wc_up = WordCloud(background_color='white', colormap='Greens').generate(text_up)
+    wc_down = WordCloud(background_color='white', colormap='Reds').generate(text_down)
 
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Topics Trending Up")
-    fig_up, ax_up = plt.subplots(figsize=(6, 4))
-    ax_up.imshow(wc_up, interpolation='bilinear')
-    ax_up.axis("off")
-    st.pyplot(fig_up)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Topics Trending Up")
+        fig_up, ax_up = plt.subplots(figsize=(6, 4))
+        ax_up.imshow(wc_up, interpolation='bilinear')
+        ax_up.axis("off")
+        st.pyplot(fig_up)
 
-with col2:
-    st.subheader("Topics Trending Down")
-    fig_down, ax_down = plt.subplots(figsize=(6, 4))
-    ax_down.imshow(wc_down, interpolation='bilinear')
-    ax_down.axis("off")
-    st.pyplot(fig_down)
+    with col2:
+        st.subheader("Topics Trending Down")
+        fig_down, ax_down = plt.subplots(figsize=(6, 4))
+        ax_down.imshow(wc_down, interpolation='bilinear')
+        ax_down.axis("off")
+        st.pyplot(fig_down)
+else:
+    st.warning("Topic change data is missing required columns.")
