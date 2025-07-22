@@ -5,4 +5,3 @@ matplotlib
 wordcloud
 openpyxl
 scikit-learn
-plotly-express
