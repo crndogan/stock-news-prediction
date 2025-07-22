@@ -84,7 +84,7 @@ if len(y_true) > 0 and y_true.nunique() == 2:
     - **Recall:** {rec:.2f}
     """)
 
-    fig_cm, ax_cm = plt.subplots(figsize=(2.5, 2.5))
+    fig_cm, ax_cm = plt.subplots(figsize=(0.5, 0.5))
     disp = ConfusionMatrixDisplay(confusion_matrix(y_true, y_pred), display_labels=["Down", "Up"])
     disp.plot(ax=ax_cm, cmap="Blues", colorbar=False)
     ax_cm.set_title("Confusion Matrix", fontsize=10)
