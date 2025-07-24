@@ -6,6 +6,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from wordcloud import WordCloud
 import os
 from pandas.tseries.offsets import BDay
+from datetime import timedelta
 
 #PAGE SETUP
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
@@ -62,7 +63,7 @@ selected_topic = st.sidebar.selectbox("Filter by Topic", options=["All"] + sorte
 selected_sentiment = st.sidebar.slider("Filter by Compound Sentiment", min_value=-1.0, max_value=1.0, value=(-1.0, 1.0))
 
 # --- Next Trading Day Prediction ---
-st.header("1. Next Trading Day Prediction")
+st.header("Next Trading Day Prediction")
 next_td = today + BDay(1)
 pred_row = tomorrow_df[tomorrow_df["date"] == next_td]
 if pred_row.empty and not tomorrow_df.empty:
@@ -74,8 +75,8 @@ if not pred_row.empty:
 else:
     st.warning("No prediction available for today.")
 
-# --- Sentiment Summary ---
-st.header("2. Classification & Sentiment Summary")
+#Sentiment Summary
+st.header("Classification & Sentiment Summary")
 today_sent = tone_df[tone_df["date"] == today]
 if not today_sent.empty:
     cols = st.columns(4)
@@ -86,8 +87,8 @@ if not today_sent.empty:
 else:
     st.info("No sentiment data available.")
 
-# --- Historical Performance ---
-st.header("3. Historical Prediction Performance")
+#Historical Performance
+st.header("Historical Prediction Performance")
 selected_date = st.sidebar.date_input(
     "Select a date to view history up to",
     value=today,
@@ -108,7 +109,7 @@ ax.set_xlabel("Date")
 ax.legend()
 st.pyplot(fig)
 
-# --- Classification Metrics ---
+# Classification Metrics
 metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
 y_true = metrics_df["actual_numeric"]
 y_pred = metrics_df["predicted_numeric"]
@@ -128,34 +129,51 @@ if len(y_true) > 0 and y_true.nunique() == 2:
 else:
     st.info("Not enough class variation or valid data to compute metrics.")
 
-# --- S&P 500 Market Data ---
-st.header("4. Market Close Data")
-sp_today = sp500_df[sp500_df["date"] == today]
-if not sp_today.empty:
-    st.dataframe(sp_today)
+
+
+
+# S&P 500 Market Data
+st.header("Market Close Data (Last 7 Days)")
+
+# Filter last 7 days
+last_7_days = today - timedelta(days=7)
+sp_week = sp500_df[sp500_df["date"] >= last_7_days]
+
+if not sp_week.empty:
+    st.dataframe(sp_week.sort_values("date", ascending=False))
+
     fig2, ax2 = plt.subplots(figsize=(10, 3))
-    col_name = next((col for col in ["Close", "close"] if col in sp500_df.columns), sp500_df.columns[-1])
-    ax2.plot(sp500_df["date"], sp500_df[col_name], color="blue")
-    ax2.set_title("S&P 500 Closing Price Trend")
+    col_name = next((col for col in ["Close", "close"], default=sp500_df.columns[-1]) if col in sp500_df.columns else None)
+    ax2.plot(sp_week["date"], sp_week[col_name], marker="o", color="blue")
+    ax2.set_title("S&P 500 Closing Price (Last 7 Days)")
     ax2.set_xlabel("Date")
     ax2.set_ylabel("Close Price")
+    ax2.grid(True)
     st.pyplot(fig2)
 else:
-    st.info("No S&P data available for today.")
+    st.info("No S&P 500 data available for the past week.")
 
-# --- Topic of the Day ---
-st.header("5. Topic of the Day")
-topic_today = topics_df[topics_df["date"] == today]
-if not topic_today.empty:
-    st.markdown(f"""
-    <div style='padding: 10px; background-color: #cce5ff; border-radius: 6px; width:fit-content;'>
-        <b>Topic #{topic_today['Dominant_Topic'].iloc[0]}</b>: {topic_today['Topic_Keywords'].iloc[0]}
-    </div>
-    """, unsafe_allow_html=True)
+# --- Topics from Last 7 Days ---
+st.header(" Topics from Last 7 Days")
+
+topics_week = topics_df[topics_df["date"] >= last_7_days].sort_values("date", ascending=False)
+
+if not topics_week.empty:
+    for _, row in topics_week.iterrows():
+        st.markdown(f"""
+        <div style='padding: 8px; margin-bottom: 6px; background-color: #e9f5ff; border-left: 5px solid #007acc; border-radius: 4px;'>
+            <b>{row['date'].date()} - Topic #{row['Dominant_Topic']}</b><br>
+            {row['Topic_Keywords']}
+        </div>
+        """, unsafe_allow_html=True)
 else:
-    st.info("No topic modeling data available for today.")
+    st.info("No topic modeling data available for the past 7 days.")
 
-# --- WordCloud of Topic Trends ---
+
+
+
+
+# WordCloud of Topic Trends
 st.header("6. Topic Trends WordCloud")
 if "word" in topic_change_df.columns and "label" in topic_change_df.columns:
     topic_change_df.dropna(subset=["word", "label"], inplace=True)
