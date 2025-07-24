@@ -103,38 +103,18 @@ label_map = {"Up": 1, "Down": 0}
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
-# ACTUAL vs PREDICTED SCATTER PLOT (Robust Version)
-fig2, ax2 = plt.subplots(figsize=(6, 6))
-
-x = filtered_hist["actual_numeric"].astype(float)
-y = filtered_hist["predicted_numeric"].astype(float)
-mask = x.notna() & y.notna()
-x = x[mask]
-y = y[mask]
-
-ax2.scatter(x, y, alpha=0.5, color="cornflowerblue", edgecolors="w", s=50)
-
-# Try to fit a linear trend line safely
-if len(x) >= 3 and x.var() > 0 and y.var() > 0:
-    try:
-        z = np.polyfit(x, y, 1)
-        p = np.poly1d(z)
-        ax2.plot(x, p(x), color="blue", alpha=0.6, linewidth=2, label="Trend")
-    except np.linalg.LinAlgError:
-        st.warning("Could not compute trend line due to numerical instability.")
-
-# Perfect diagonal
-ax2.plot([0, 1], [0, 1], linestyle='--', color='gray', label='Perfect Prediction')
-
-ax2.set_title("Actual vs Predicted Market Labels", fontsize=14)
-ax2.set_xlabel("Actual Label (0 = Down, 1 = Up)")
-ax2.set_ylabel("Predicted Label (0 = Down, 1 = Up)")
-ax2.grid(True, linestyle="--", alpha=0.4)
-ax2.set_xlim(-0.1, 1.1)
-ax2.set_ylim(-0.1, 1.1)
-ax2.legend()
-st.pyplot(fig2)
-
+# LINE CHART FOR ACTUAL VS PREDICTED
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.plot(filtered_hist["date"], filtered_hist["actual_numeric"], label="Actual", color="green", marker="o")
+ax.plot(filtered_hist["date"], filtered_hist["predicted_numeric"], label="Predicted", color="orange", marker="x")
+ax.set_title("Market Movement Prediction vs Actual")
+ax.set_ylabel("Label (0 = Down, 1 = Up)")
+ax.set_xlabel("Date")
+ax.set_yticks([0, 1])
+ax.set_yticklabels(["Down", "Up"])
+ax.grid(True, linestyle="--", alpha=0.5)
+ax.legend()
+st.pyplot(fig)
 
 # CLASSIFICATION METRICS
 metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
