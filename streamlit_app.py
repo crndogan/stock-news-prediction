@@ -7,10 +7,10 @@ from wordcloud import WordCloud
 import os
 from pandas.tseries.offsets import BDay
 
-# --- Streamlit page setup ---
+#PAGE SETUP
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
 
-# --- CSS Styling ---
+#CSS STYLING
 st.markdown("""
     <style>
         .main {
@@ -27,7 +27,7 @@ st.markdown("""
 
 st.title("Stock News & Market Movement Prediction")
 
-# --- Load Data (with cache busting) ---
+#Load Data
 @st.cache_data(ttl=3600)
 def load_data(version=None):
     base = "notebooks"
@@ -50,12 +50,12 @@ def version_stamp():
 
 tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data(version_stamp())
 
-# --- Determine today's reference date ---
+#Determine today's reference date
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
 today = max(df["date"].max() for df in dfs if not df.empty).normalize()
 st.sidebar.info(f"Latest data: {today.date()}")
 
-# --- Sidebar Filters ---
+# Sidebar Filters
 st.sidebar.markdown("### 🔍 Filters")
 st.sidebar.markdown("Use the filters below to refine analysis")
 selected_topic = st.sidebar.selectbox("Filter by Topic", options=["All"] + sorted(topics_df['Dominant_Topic'].unique()))
@@ -159,6 +159,8 @@ else:
 st.header("6. Topic Trends WordCloud")
 if "Topic" in topic_change_df.columns and "Direction" in topic_change_df.columns:
     topic_change_df.dropna(subset=["Topic", "Direction"], inplace=True)
+    topic_change_df = pd.read_csv(f"{base}/topic_up_down.csv")
+    topic_change_df.columns = topic_change_df.columns.str.strip().str.capitalize()
     text_up = " ".join(topic_change_df[topic_change_df["Direction"] == "Up"]["Topic"].astype(str))
     text_down = " ".join(topic_change_df[topic_change_df["Direction"] == "Down"]["Topic"].astype(str))
 
