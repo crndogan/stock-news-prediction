@@ -157,12 +157,11 @@ else:
 
 # --- WordCloud of Topic Trends ---
 st.header("6. Topic Trends WordCloud")
-if "Topic" in topic_change_df.columns and "Direction" in topic_change_df.columns:
-    topic_change_df.dropna(subset=["Topic", "Direction"], inplace=True)
-    topic_change_df = pd.read_csv(f"{base}/topic_up_down.csv")
-    topic_change_df.columns = topic_change_df.columns.str.strip().str.capitalize()
-    text_up = " ".join(topic_change_df[topic_change_df["Direction"] == "Up"]["Topic"].astype(str))
-    text_down = " ".join(topic_change_df[topic_change_df["Direction"] == "Down"]["Topic"].astype(str))
+if "word" in topic_change_df.columns and "label" in topic_change_df.columns:
+    topic_change_df.dropna(subset=["word", "label"], inplace=True)
+    text_up = " ".join(topic_change_df[topic_change_df["label"] == "Up"]["word"].astype(str))
+    text_down = " ".join(topic_change_df[topic_change_df["label"] == "Down"]["word"].astype(str))
+
 
     wc_up = WordCloud(background_color='white', colormap='Greens').generate(text_up)
     wc_down = WordCloud(background_color='white', colormap='Reds').generate(text_down)
