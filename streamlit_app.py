@@ -79,11 +79,10 @@ else:
 st.header("Classification & Sentiment Summary")
 today_sent = tone_df[tone_df["date"] == today]
 if not today_sent.empty:
-    cols = st.columns(4)
-    cols[0].metric("Label", today_sent["label"].iloc[0])
-    cols[1].metric("Compound Sentiment", round(today_sent["sent_compound"].iloc[0], 3))
-    cols[2].metric("Positive", today_sent["emo_positive"].iloc[0])
-    cols[3].metric("Negative", today_sent["emo_negative"].iloc[0])
+    cols = st.columns(3)
+    cols[0].metric("Compound Sentiment", round(today_sent["sent_compound"].iloc[0], 3))
+    cols[1].metric("Positive", today_sent["emo_positive"].iloc[0])
+    cols[2].metric("Negative", today_sent["emo_negative"].iloc[0])
 else:
     st.info("No sentiment data available.")
 
