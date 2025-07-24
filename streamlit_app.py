@@ -130,21 +130,18 @@ else:
     st.info("Not enough class variation or valid data to compute metrics.")
 
 
+# --- S&P 500 Market Data
+st.header("Market Close Data")
 
-
-# S&P 500 Market Data
-st.header("Market Close Data (Last 7 Days)")
-
-# Filter last 7 days
 last_7_days = today - timedelta(days=7)
-sp_week = sp500_df[sp500_df["date"] >= last_7_days]
+sp_week = sp500_df[sp500_df["date"] >= last_7_days].copy()
 
 if not sp_week.empty:
     st.dataframe(sp_week.sort_values("date", ascending=False))
 
     fig2, ax2 = plt.subplots(figsize=(10, 3))
-    col_name = next((col for col in ["Close", "close"], default=sp500_df.columns[-1]) if col in sp500_df.columns else None)
-    ax2.plot(sp_week["date"], sp_week[col_name], marker="o", color="blue")
+    col_name = next((c for c in ["Close", "close"] if c in sp500_df.columns), sp500_df.columns[-1])
+    ax2.plot(sp_week["date"], sp_week[col_name], marker="o")
     ax2.set_title("S&P 500 Closing Price (Last 7 Days)")
     ax2.set_xlabel("Date")
     ax2.set_ylabel("Close Price")
@@ -153,8 +150,8 @@ if not sp_week.empty:
 else:
     st.info("No S&P 500 data available for the past week.")
 
-# --- Topics from Last 7 Days ---
-st.header(" Topics from Last 7 Days")
+# Topics from Last 7 Days
+st.header("Topics from Last 7 Days")
 
 topics_week = topics_df[topics_df["date"] >= last_7_days].sort_values("date", ascending=False)
 
@@ -174,7 +171,7 @@ else:
 
 
 # WordCloud of Topic Trends
-st.header("6. Topic Trends WordCloud")
+st.header("Topic Trends WordCloud")
 if "word" in topic_change_df.columns and "label" in topic_change_df.columns:
     topic_change_df.dropna(subset=["word", "label"], inplace=True)
     text_up = " ".join(topic_change_df[topic_change_df["label"] == "Up"]["word"].astype(str))
