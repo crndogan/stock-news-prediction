@@ -94,17 +94,14 @@ selected_date = st.sidebar.date_input(
     max_value=hist_df["date"].max().date()
 )
 
-# Filter tone by compound sentiment and merge with hist
 filtered_tone_df = tone_df[tone_df["sent_compound"].between(*selected_sentiment)]
 filtered_hist = pd.merge(hist_df, filtered_tone_df[["date"]], on="date", how="inner")
 filtered_hist = filtered_hist[filtered_hist["date"] <= pd.to_datetime(selected_date)].copy()
 
-# Map labels
 label_map = {"Up": 1, "Down": 0}
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
-# Improved Chart
 fig, ax = plt.subplots(figsize=(10, 4))
 ax.set_facecolor("#f9f9f9")
 ax.grid(True, linestyle="--", alpha=0.5)
@@ -138,21 +135,13 @@ if len(y_true) > 0 and y_true.nunique() == 2:
 else:
     st.info("Not enough variation in filtered labels to compute metrics.")
 
-# S&P 500 MARKET DATA (LAST 7 DAYS)
+# S&P 500 MARKET DATA (TABLE ONLY)
 st.header("Market Close Data")
 last_7_days = today - timedelta(days=7)
 sp_week = sp500_df[sp500_df["date"] >= last_7_days].copy()
 
 if not sp_week.empty:
     st.dataframe(sp_week.sort_values("date", ascending=False))
-    fig2, ax2 = plt.subplots(figsize=(10, 3))
-    col_name = next((c for c in ["Close", "close"] if c in sp500_df.columns), sp500_df.columns[-1])
-    ax2.plot(sp_week["date"], sp_week[col_name], marker="o")
-    ax2.set_title("S&P 500 Closing Price (Last 7 Days)")
-    ax2.set_xlabel("Date")
-    ax2.set_ylabel("Close Price")
-    ax2.grid(True)
-    st.pyplot(fig2)
 else:
     st.info("No S&P 500 data available for the past week.")
 
