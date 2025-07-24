@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from wordcloud import WordCloud
+import os
+from pandas.tseries.offsets import BDay
 
 # --- Streamlit page setup ---
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
 
-# --- CSS for themes ---
+# --- CSS Styling ---
 st.markdown("""
     <style>
         .main {
@@ -25,9 +27,9 @@ st.markdown("""
 
 st.title("Stock News & Market Movement Prediction")
 
-# --- Load Data ---
-@st.cache_data
-def load_data():
+# --- Load Data (with cache busting) ---
+@st.cache_data(ttl=3600)
+def load_data(version=None):
     base = "notebooks"
     tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
     hist = pd.read_csv(f"{base}/prediction_results.csv", parse_dates=["date"])
@@ -37,25 +39,37 @@ def load_data():
     topic_change = pd.read_csv(f"{base}/topic_up_down.csv")
     return tone, hist, prices, tomorrow, topics, topic_change
 
-tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data()
+def version_stamp():
+    base = "notebooks"
+    files = [
+        f"{base}/stock_news_tone.xlsx", f"{base}/prediction_results.csv",
+        f"{base}/sp500_cleaned.csv", f"{base}/tomorrow_prediction.csv",
+        f"{base}/topic_modeling.csv", f"{base}/topic_up_down.csv"
+    ]
+    return tuple(os.path.getmtime(p) for p in files if os.path.exists(p))
 
-# --- Use max valid sentiment date ---
-valid_sentiment = tone_df[tone_df["emo_positive"] > 0]
-today = valid_sentiment["date"].max()
+tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data(version_stamp())
+
+# --- Determine today's reference date ---
+dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
+today = max(df["date"].max() for df in dfs if not df.empty).normalize()
 st.sidebar.info(f"Latest data: {today.date()}")
 
-# --- Sidebar: advanced filters ---
+# --- Sidebar Filters ---
 st.sidebar.markdown("### 🔍 Filters")
 st.sidebar.markdown("Use the filters below to refine analysis")
-
 selected_topic = st.sidebar.selectbox("Filter by Topic", options=["All"] + sorted(topics_df['Dominant_Topic'].unique()))
 selected_sentiment = st.sidebar.slider("Filter by Compound Sentiment", min_value=-1.0, max_value=1.0, value=(-1.0, 1.0))
 
-# --- Prediction ---
+# --- Next Trading Day Prediction ---
 st.header("1. Next Trading Day Prediction")
-pred_row = tomorrow_df[tomorrow_df["date"] == today]
+next_td = today + BDay(1)
+pred_row = tomorrow_df[tomorrow_df["date"] == next_td]
+if pred_row.empty and not tomorrow_df.empty:
+    pred_row = tomorrow_df.loc[[tomorrow_df["date"].idxmax()]]
 if not pred_row.empty:
-    st.metric("Predicted Movement", pred_row["predicted_movement"].iloc[0],
+    st.metric("Predicted Movement",
+              pred_row["predicted_movement"].iloc[0],
               f"{pred_row['confidence'].iloc[0]:.1%}")
 else:
     st.warning("No prediction available for today.")
@@ -72,12 +86,15 @@ if not today_sent.empty:
 else:
     st.info("No sentiment data available.")
 
-# --- Historical Classification Chart & Metrics ---
+# --- Historical Performance ---
 st.header("3. Historical Prediction Performance")
-selected_date = st.sidebar.date_input("Select a date to view history up to", value=today,
-                                      min_value=hist_df["date"].min().date(),
-                                      max_value=hist_df["date"].max().date())
-filtered_hist = hist_df[hist_df["date"] <= pd.to_datetime(selected_date)]
+selected_date = st.sidebar.date_input(
+    "Select a date to view history up to",
+    value=today,
+    min_value=hist_df["date"].min().date(),
+    max_value=hist_df["date"].max().date()
+)
+filtered_hist = hist_df[hist_df["date"] <= pd.to_datetime(selected_date)].copy()
 label_map = {"Up": 1, "Down": 0}
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
@@ -101,7 +118,6 @@ if len(y_true) > 0 and y_true.nunique() == 2:
     f1 = f1_score(y_true, y_pred)
     prec = precision_score(y_true, y_pred)
     rec = recall_score(y_true, y_pred)
-
     st.subheader("Classification Metrics")
     st.markdown(f"""
     - **Accuracy:** {acc:.2%}  
@@ -112,12 +128,11 @@ if len(y_true) > 0 and y_true.nunique() == 2:
 else:
     st.info("Not enough class variation or valid data to compute metrics.")
 
-# --- S&P 500 Daily Table & Price Trend ---
+# --- S&P 500 Market Data ---
 st.header("4. Market Close Data")
 sp_today = sp500_df[sp500_df["date"] == today]
 if not sp_today.empty:
     st.dataframe(sp_today)
-
     fig2, ax2 = plt.subplots(figsize=(10, 3))
     col_name = next((col for col in ["Close", "close"] if col in sp500_df.columns), sp500_df.columns[-1])
     ax2.plot(sp500_df["date"], sp500_df[col_name], color="blue")
@@ -128,7 +143,7 @@ if not sp_today.empty:
 else:
     st.info("No S&P data available for today.")
 
-# --- Topic Modeling ---
+# --- Topic of the Day ---
 st.header("5. Topic of the Day")
 topic_today = topics_df[topics_df["date"] == today]
 if not topic_today.empty:
@@ -140,7 +155,7 @@ if not topic_today.empty:
 else:
     st.info("No topic modeling data available for today.")
 
-# --- WordCloud of Up & Down Topics ---
+# --- WordCloud of Topic Trends ---
 st.header("6. Topic Trends WordCloud")
 if "Topic" in topic_change_df.columns and "Direction" in topic_change_df.columns:
     topic_change_df.dropna(subset=["Topic", "Direction"], inplace=True)
