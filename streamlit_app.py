@@ -196,4 +196,3 @@ if "word" in topic_change_df.columns and "label" in topic_change_df.columns:
 else:
     st.warning("Topic change data is missing required columns.")
 
-
