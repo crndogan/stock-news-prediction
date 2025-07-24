@@ -102,18 +102,27 @@ label_map = {"Up": 1, "Down": 0}
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
-fig, ax = plt.subplots(figsize=(10, 4))
-ax.set_facecolor("#f9f9f9")
-ax.grid(True, linestyle="--", alpha=0.5)
-ax.scatter(filtered_hist["date"], filtered_hist["actual_numeric"], label="Actual", color="green", marker='o', s=100, alpha=0.8)
-ax.scatter(filtered_hist["date"], filtered_hist["predicted_numeric"], label="Predicted", color="red", marker='x', s=80)
-ax.set_title("Actual vs Predicted (Up = 1, Down = 0)", fontsize=14)
-ax.set_ylabel("Label")
-ax.set_xlabel("Date")
-ax.set_yticks([0, 1])
-ax.set_yticklabels(["Down", "Up"])
-ax.legend(loc="lower left")
-st.pyplot(fig)
+# ACTUAL vs PREDICTED SCATTER PLOT
+fig2, ax2 = plt.subplots(figsize=(6, 6))
+ax2.scatter(filtered_hist["actual_numeric"], filtered_hist["predicted_numeric"], alpha=0.5, color="cornflowerblue", edgecolors="w", s=50)
+
+min_val = min(filtered_hist["actual_numeric"].min(), filtered_hist["predicted_numeric"].min())
+max_val = max(filtered_hist["actual_numeric"].max(), filtered_hist["predicted_numeric"].max())
+ax2.plot([min_val, max_val], [min_val, max_val], linestyle='--', color='gray', label='Perfect Prediction')
+
+import numpy as np
+z = np.polyfit(filtered_hist["actual_numeric"], filtered_hist["predicted_numeric"], 1)
+p = np.poly1d(z)
+ax2.plot(filtered_hist["actual_numeric"], p(filtered_hist["actual_numeric"]), color="blue", alpha=0.6, linewidth=2, label="Trend")
+
+ax2.set_title("Actual vs Predicted Market Labels", fontsize=14)
+ax2.set_xlabel("Actual Label (0 = Down, 1 = Up)")
+ax2.set_ylabel("Predicted Label (0 = Down, 1 = Up)")
+ax2.grid(True, linestyle="--", alpha=0.4)
+ax2.set_xlim(-0.1, 1.1)
+ax2.set_ylim(-0.1, 1.1)
+ax2.legend()
+st.pyplot(fig2)
 
 # CLASSIFICATION METRICS
 metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
@@ -185,4 +194,5 @@ if "word" in topic_change_df.columns and "label" in topic_change_df.columns:
         st.pyplot(fig_down)
 else:
     st.warning("Topic change data is missing required columns.")
+
 
