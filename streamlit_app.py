@@ -86,7 +86,7 @@ if not today_sent.empty:
 else:
     st.info("No sentiment data available.")
 
-# HISTORICAL PERFORMANCE (FILTERED)
+# HISTORICAL PERFORMANCE
 st.header("Historical Prediction Performance (Filtered by Sentiment)")
 selected_date = st.sidebar.date_input(
     "Select a date to view history up to",
@@ -103,18 +103,28 @@ label_map = {"Up": 1, "Down": 0}
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
-# ACTUAL vs PREDICTED SCATTER PLOT
+# ACTUAL vs PREDICTED SCATTER PLOT (Robust Version)
 fig2, ax2 = plt.subplots(figsize=(6, 6))
-ax2.scatter(filtered_hist["actual_numeric"], filtered_hist["predicted_numeric"], alpha=0.5, color="cornflowerblue", edgecolors="w", s=50)
 
-if filtered_hist["actual_numeric"].nunique() > 1:
-    z = np.polyfit(filtered_hist["actual_numeric"], filtered_hist["predicted_numeric"], 1)
-    p = np.poly1d(z)
-    ax2.plot(filtered_hist["actual_numeric"], p(filtered_hist["actual_numeric"]), color="blue", alpha=0.6, linewidth=2, label="Trend")
+x = filtered_hist["actual_numeric"].astype(float)
+y = filtered_hist["predicted_numeric"].astype(float)
+mask = x.notna() & y.notna()
+x = x[mask]
+y = y[mask]
 
-min_val = 0
-max_val = 1
-ax2.plot([min_val, max_val], [min_val, max_val], linestyle='--', color='gray', label='Perfect Prediction')
+ax2.scatter(x, y, alpha=0.5, color="cornflowerblue", edgecolors="w", s=50)
+
+# Try to fit a linear trend line safely
+if len(x) >= 3 and x.var() > 0 and y.var() > 0:
+    try:
+        z = np.polyfit(x, y, 1)
+        p = np.poly1d(z)
+        ax2.plot(x, p(x), color="blue", alpha=0.6, linewidth=2, label="Trend")
+    except np.linalg.LinAlgError:
+        st.warning("Could not compute trend line due to numerical instability.")
+
+# Perfect diagonal
+ax2.plot([0, 1], [0, 1], linestyle='--', color='gray', label='Perfect Prediction')
 
 ax2.set_title("Actual vs Predicted Market Labels", fontsize=14)
 ax2.set_xlabel("Actual Label (0 = Down, 1 = Up)")
@@ -124,6 +134,7 @@ ax2.set_xlim(-0.1, 1.1)
 ax2.set_ylim(-0.1, 1.1)
 ax2.legend()
 st.pyplot(fig2)
+
 
 # CLASSIFICATION METRICS
 metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
