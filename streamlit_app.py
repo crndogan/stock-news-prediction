@@ -6,6 +6,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from wordcloud import WordCloud
 import os
 from pandas.tseries.offsets import BDay
+import numpy as np
 
 # PAGE SETUP
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
@@ -106,14 +107,14 @@ filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_
 fig2, ax2 = plt.subplots(figsize=(6, 6))
 ax2.scatter(filtered_hist["actual_numeric"], filtered_hist["predicted_numeric"], alpha=0.5, color="cornflowerblue", edgecolors="w", s=50)
 
-min_val = min(filtered_hist["actual_numeric"].min(), filtered_hist["predicted_numeric"].min())
-max_val = max(filtered_hist["actual_numeric"].max(), filtered_hist["predicted_numeric"].max())
-ax2.plot([min_val, max_val], [min_val, max_val], linestyle='--', color='gray', label='Perfect Prediction')
+if filtered_hist["actual_numeric"].nunique() > 1:
+    z = np.polyfit(filtered_hist["actual_numeric"], filtered_hist["predicted_numeric"], 1)
+    p = np.poly1d(z)
+    ax2.plot(filtered_hist["actual_numeric"], p(filtered_hist["actual_numeric"]), color="blue", alpha=0.6, linewidth=2, label="Trend")
 
-import numpy as np
-z = np.polyfit(filtered_hist["actual_numeric"], filtered_hist["predicted_numeric"], 1)
-p = np.poly1d(z)
-ax2.plot(filtered_hist["actual_numeric"], p(filtered_hist["actual_numeric"]), color="blue", alpha=0.6, linewidth=2, label="Trend")
+min_val = 0
+max_val = 1
+ax2.plot([min_val, max_val], [min_val, max_val], linestyle='--', color='gray', label='Perfect Prediction')
 
 ax2.set_title("Actual vs Predicted Market Labels", fontsize=14)
 ax2.set_xlabel("Actual Label (0 = Down, 1 = Up)")
