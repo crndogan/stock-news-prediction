@@ -104,7 +104,7 @@ filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
 # LINE CHART FOR ACTUAL VS PREDICTED
-fig, ax = plt.subplots(figsize=(10, 4))
+fig, ax = plt.subplots(figsize=(10, 5))
 ax.plot(filtered_hist["date"], filtered_hist["actual_numeric"], label="Actual", color="green", marker="o")
 ax.plot(filtered_hist["date"], filtered_hist["predicted_numeric"], label="Predicted", color="orange", marker="x")
 ax.set_title("Market Movement Prediction vs Actual")
@@ -114,6 +114,8 @@ ax.set_yticks([0, 1])
 ax.set_yticklabels(["Down", "Up"])
 ax.grid(True, linestyle="--", alpha=0.5)
 ax.legend()
+ax.set_xticks(filtered_hist["date"])
+ax.set_xticklabels(filtered_hist["date"].dt.strftime('%b %d'), rotation=90)
 st.pyplot(fig)
 
 # CLASSIFICATION METRICS
