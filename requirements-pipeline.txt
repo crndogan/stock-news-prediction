@@ -1,5 +1,6 @@
-jupyter
 nbconvert
+nbformat
+nbclient
 pandas
 numpy
 openpyxl
@@ -20,6 +21,6 @@ ipython
 gensim
 pyldavis
 streamlit
-gensim
-pyldavis
+
+
 
