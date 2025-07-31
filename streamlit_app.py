@@ -88,12 +88,26 @@ else:
 
 # HISTORICAL PERFORMANCE
 st.header("Historical Prediction Performance (Filtered by Sentiment)")
-selected_date = st.sidebar.date_input(
-    "Select a date to view history up to",
-    value=today,
-    min_value=hist_df["date"].min().date(),
-    max_value=hist_df["date"].max().date()
-)
+if not hist_df.empty:
+    min_hist_date = hist_df["date"].min().date()
+    max_hist_date = hist_df["date"].max().date()
+
+    # Make sure today is within range
+    default_date = today.date()
+    if default_date < min_hist_date:
+        default_date = min_hist_date
+    elif default_date > max_hist_date:
+        default_date = max_hist_date
+
+    selected_date = st.sidebar.date_input(
+        "Select a date to view history up to",
+        value=default_date,
+        min_value=min_hist_date,
+        max_value=max_hist_date
+    )
+else:
+    st.sidebar.warning("No historical data available.")
+    selected_date = today.date()
 
 filtered_tone_df = tone_df[tone_df["sent_compound"].between(*selected_sentiment)]
 filtered_hist = pd.merge(hist_df, filtered_tone_df[["date"]], on="date", how="inner")
