@@ -90,7 +90,7 @@ else:
 st.header("Historical Prediction Performance (Filtered by Sentiment)")
 if not hist_df.empty:
     min_hist_date = hist_df["date"].min().date()
-    max_hist_date = hist_df["date"].max().date()
+    max_hist_date = max(today.date(), hist_df["date"].max().date())
 
     # Make sure today is within range
     default_date = today.date()
