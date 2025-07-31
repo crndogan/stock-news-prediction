@@ -1,4 +1,3 @@
-# .github/workflows/daily_stock_news_modeling.yml
 name: Daily Stock News Modeling
 
 on:
@@ -21,24 +20,24 @@ jobs:
 
       - name: Register Python kernel for Jupyter
         run: |
-           pip install notebook ipykernel
-           python -m ipykernel install --user --name=python3
+          pip install notebook ipykernel
+          python -m ipykernel install --user --name=python3
 
-
-      - name: Export API Key to environment
-        run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements-pipeline.txt
 
       - name: Download NLTK & TextBlob corpora
         run: |
           python -m nltk.downloader punkt stopwords vader_lexicon averaged_perceptron_tagger wordnet
           python -m textblob.download_corpora
 
+      - name: Export API Key to environment
+        run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
+
       - name: Execute Master Notebook (force full rerun)
         run: |
-          # ensure output folder exists
           mkdir -p notebooks
-
-          # clear old outputs and re-execute all cells
           jupyter nbconvert \
             --to notebook \
             --execute notebooks/Master_Data_Modeling.ipynb \
@@ -65,3 +64,4 @@ jobs:
           git add runtime.txt
           git commit -m "chore: pin Streamlit Cloud to Python 3.10 for SciPy compatibility" || echo "No changes to commit"
           git push
+
