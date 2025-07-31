@@ -19,10 +19,11 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Register Python kernel for Jupyter
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-pipeline.txt
+           pip install notebook ipykernel
+           python -m ipykernel install --user --name=python3
+
 
       - name: Export API Key to environment
         run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
