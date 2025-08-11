@@ -9,35 +9,75 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from wordcloud import WordCloud
 import os
 
-
+# -------------------------------------------------
 # PAGE / THEME
+# -------------------------------------------------
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
 
-PRIMARY = "#0B6EFD"     # blue
-ACCENT  = "#198754"     # green
-WARN    = "#FF6B6B"     # red
-BG_SOFT = "#F5F8FC"
+# Blue palette
+PRIMARY   = "#0B6EFD"   # primary blue
+PRIMARY_D = "#0A58CA"   # darker blue
+PRIMARY_L = "#6EA8FE"   # lighter blue
+INK       = "#0D1B2A"   # ink text
+MUTED     = "#6C757D"
+BG_SOFT   = "#F5F8FF"   # soft blue background
+CARD_BG   = "#FFFFFF"
+BORDER    = "#E7EEF7"
+
+# If you prefer NO green/red even for directions, set this to False
+USE_DIR_COLORS = True
 
 st.markdown(f"""
 <style>
   .main {{ background:{BG_SOFT}; }}
   .block-container {{ padding-top: 0.75rem; }}
   .kpi-card {{
-      padding: 12px 14px; background: white; border: 1px solid #e9eef5;
-      border-radius: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      padding: 12px 14px; background: {CARD_BG}; border: 1px solid {BORDER};
+      border-radius: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   }}
   .section-title {{
       margin-top: 0.5rem; margin-bottom: 0.25rem;
-      font-weight: 700; font-size: 1.1rem; color: #0f1a2a;
+      font-weight: 700; font-size: 1.05rem; color: {INK};
+  }}
+  .blue-pill {{
+      display:inline-block; padding:2px 8px; border-radius: 999px;
+      background:{PRIMARY_L}22; color:{PRIMARY_D}; border:1px solid {PRIMARY_L}66;
+      font-size:0.85rem;
   }}
 </style>
 """, unsafe_allow_html=True)
 
 st.title("Stock News & Market Movement Prediction")
 
+# -------------------------------------------------
+# Altair theme (blues)
+# -------------------------------------------------
+def blue_theme():
+    return {
+        "config": {
+            "view": {"continuousWidth": 400, "continuousHeight": 300, "stroke": None},
+            "axis": {
+                "labelColor": INK, "titleColor": INK,
+                "gridColor": "#E9EEF6", "tickColor": "#E9EEF6"
+            },
+            "legend": {
+                "labelColor": INK, "titleColor": INK, "orient": "top", "fillColor": CARD_BG
+            },
+            "title": {"color": INK},
+            "range": {
+                "category": [PRIMARY, PRIMARY_L, PRIMARY_D, "#9EC5FE", "#CFE2FF"]
+            },
+            "line": {"strokeWidth": 2},
+            "point": {"filled": True, "size": 45}
+        }
+    }
 
-# DATA LOADING 
+alt.themes.register("blue_theme", blue_theme)
+alt.themes.enable("blue_theme")
 
+# -------------------------------------------------
+# DATA LOADING (cache w/ version busting)
+# -------------------------------------------------
 @st.cache_data(ttl=3600)
 def load_data(version=None):
     base = "notebooks"
@@ -61,47 +101,43 @@ def version_stamp():
     ]
     return tuple(os.path.getmtime(p) for p in files if os.path.exists(p))
 
-# Top controls
-left, right = st.columns([1,1])
-with left:
-    if st.button("🔄 Refresh data (clear cache)"):
+top_l, top_r = st.columns([1,1])
+with top_l:
+    if st.button("Refresh data"):
         st.cache_data.clear()
 
 tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data(version_stamp())
 
-
+# -------------------------------------------------
 # BASIC DATES / STATUS
+# -------------------------------------------------
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
 today = max(df["date"].max() for df in dfs if not df.empty).normalize()
-st.sidebar.info(f"📅 Latest data date: **{today.date()}**")
+st.sidebar.info(f"Latest data date: **{today.date()}**")
 
-
+# -------------------------------------------------
 # SIDEBAR FILTERS
-
-st.sidebar.markdown("### 🔍 Filters")
-st.sidebar.caption("Use the filters to update charts and metrics in real time.")
-
+# -------------------------------------------------
+st.sidebar.markdown("### Filters")
 topic_options = ["All"]
 if not topics_df.empty and "Dominant_Topic" in topics_df.columns:
     topic_options += sorted([int(t) if str(t).isdigit() else t
                              for t in topics_df["Dominant_Topic"].dropna().unique().tolist()])
+selected_topic = st.sidebar.selectbox("Topic", options=topic_options, index=0)
+selected_sentiment = st.sidebar.slider("Compound Sentiment", -1.0, 1.0, value=(-0.30, 0.30))
 
-selected_topic = st.sidebar.selectbox("Filter by Topic", options=topic_options, index=0)
-selected_sentiment = st.sidebar.slider("Filter by Compound Sentiment", -1.0, 1.0, value=(-1.0, 1.0))
-
-# Historical date range
 if not hist_df.empty:
     min_hist_date = hist_df["date"].min().date()
     max_hist_date = max(today.date(), hist_df["date"].max().date())
     default_date = np.clip(pd.to_datetime(today).date(), min_hist_date, max_hist_date)
-    selected_date = st.sidebar.date_input("Show history up to", value=default_date,
+    selected_date = st.sidebar.date_input("History up to", value=default_date,
                                           min_value=min_hist_date, max_value=max_hist_date)
 else:
     selected_date = today.date()
 
-
+# -------------------------------------------------
 # NEXT TRADING DAY PREDICTION
-
+# -------------------------------------------------
 st.markdown('<div class="section-title">Next Trading Day Prediction</div>', unsafe_allow_html=True)
 next_td = today + BDay(1)
 pred_row = tomorrow_df[tomorrow_df["date"] == next_td]
@@ -110,71 +146,75 @@ if pred_row.empty and not tomorrow_df.empty:
 
 if not pred_row.empty:
     c1, c2 = st.columns(2)
-    with c1:
-        st.metric("Predicted Movement", pred_row["predicted_movement"].iloc[0])
-    with c2:
-        st.metric("Confidence", f"{pred_row['confidence'].iloc[0]:.1%}")
+    c1.markdown(f"<div class='kpi-card'><b>Predicted Movement</b><br>"
+                f"<span style='font-size:1.5rem;color:{PRIMARY_D}'>{pred_row['predicted_movement'].iloc[0]}</span></div>",
+                unsafe_allow_html=True)
+    c2.markdown(f"<div class='kpi-card'><b>Confidence</b><br>"
+                f"<span style='font-size:1.5rem;color:{PRIMARY_D}'>{pred_row['confidence'].iloc[0]:.1%}</span></div>",
+                unsafe_allow_html=True)
 else:
-    st.warning("No prediction available for the next trading day.")
+    st.info("No prediction available for the next trading day.")
 
-
-# SENTIMENT SNAPSHOT 
-
+# -------------------------------------------------
+# TODAY’S SENTIMENT SNAPSHOT
+# -------------------------------------------------
 st.markdown('<div class="section-title">Today’s Sentiment Snapshot</div>', unsafe_allow_html=True)
 today_sent = tone_df[tone_df["date"] == today]
 if not today_sent.empty:
     c1, c2, c3 = st.columns(3)
-    c1.markdown(f"<div class='kpi-card'><b>Compound</b><br><span style='font-size:1.4rem;'>{today_sent['sent_compound'].iloc[0]:.3f}</span></div>", unsafe_allow_html=True)
-    c2.markdown(f"<div class='kpi-card'><b>Emotion: Positive</b><br><span style='font-size:1.4rem;'>{today_sent['emo_positive'].iloc[0]:.3f}</span></div>", unsafe_allow_html=True)
-    c3.markdown(f"<div class='kpi-card'><b>Emotion: Negative</b><br><span style='font-size:1.4rem;'>{today_sent['emo_negative'].iloc[0]:.3f}</span></div>", unsafe_allow_html=True)
+    c1.markdown(f"<div class='kpi-card'><b>Compound</b><br>"
+                f"<span style='font-size:1.5rem;color:{PRIMARY_D}'>{today_sent['sent_compound'].iloc[0]:.3f}</span></div>",
+                unsafe_allow_html=True)
+    c2.markdown(f"<div class='kpi-card'><b>Emotion: Positive</b><br>"
+                f"<span style='font-size:1.5rem;color:{PRIMARY_D}'>{today_sent['emo_positive'].iloc[0]:.3f}</span></div>",
+                unsafe_allow_html=True)
+    c3.markdown(f"<div class='kpi-card'><b>Emotion: Negative</b><br>"
+                f"<span style='font-size:1.5rem;color:{PRIMARY_D}'>{today_sent['emo_negative'].iloc[0]:.3f}</span></div>",
+                unsafe_allow_html=True)
 else:
     st.info("No sentiment data for today.")
 
-
-#FILTERED HISTORY 
-
-# sentiment filter → dates that qualify
+# -------------------------------------------------
+# BUILD FILTERED HISTORY (topic + sentiment + date)
+# -------------------------------------------------
 tone_filtered = tone_df[tone_df["sent_compound"].between(*selected_sentiment)][["date"]].drop_duplicates()
-
-# optional topic filter → dates that match the chosen Dominant_Topic
 if selected_topic != "All" and not topics_df.empty:
-    topic_mask = topics_df["Dominant_Topic"] == selected_topic
-    topic_dates = topics_df.loc[topic_mask, ["date"]].drop_duplicates()
+    topic_dates = topics_df.loc[topics_df["Dominant_Topic"] == selected_topic, ["date"]].drop_duplicates()
     driver_dates = pd.merge(tone_filtered, topic_dates, on="date", how="inner")
 else:
     driver_dates = tone_filtered
-
-# date ceiling filter
 driver_dates = driver_dates[driver_dates["date"] <= pd.to_datetime(selected_date)]
-
-# join with history (predictions)
 filtered_hist = pd.merge(hist_df, driver_dates, on="date", how="inner").sort_values("date")
 
-# numeric labels
-label_map = {"Up": 1, "Down": 0, 1:1, 0:0}
+# Label mapping
+label_map = {"Up": 1, "Down": 0, 1: 1, 0: 0}
 for col in ["actual_label", "predicted_label"]:
     if filtered_hist[col].dtype == "O":
         filtered_hist[col] = filtered_hist[col].str.strip()
-
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
-
-# INTERACTIVE CHART: Actual vs Predicted
-
+# -------------------------------------------------
+# INTERACTIVE CHART: Actual vs Predicted (blue lines)
+# -------------------------------------------------
 st.markdown('<div class="section-title">Actual vs Predicted Market Direction</div>', unsafe_allow_html=True)
 if not filtered_hist.empty:
     chart_df = filtered_hist[["date", "actual_numeric", "predicted_numeric"]].melt(
         id_vars="date", var_name="Series", value_name="Value"
-    ).replace({"actual_numeric":"Actual", "predicted_numeric":"Predicted"})
+    ).replace({"actual_numeric": "Actual", "predicted_numeric": "Predicted"})
+
+    # Fix series order/colors explicitly (both blue tones)
+    color_scale = alt.Scale(domain=["Actual", "Predicted"],
+                            range=[PRIMARY_D, PRIMARY_L])
 
     chart = (
         alt.Chart(chart_df)
         .mark_line(point=True)
         .encode(
             x=alt.X("date:T", title="Date"),
-            y=alt.Y("Value:Q", title="Direction (0=Down, 1=Up)", scale=alt.Scale(domain=[-0.05, 1.05])),
-            color=alt.Color("Series:N", legend=alt.Legend(orient="top")),
+            y=alt.Y("Value:Q", title="Direction (0=Down, 1=Up)",
+                    scale=alt.Scale(domain=[-0.05, 1.05])),
+            color=alt.Color("Series:N", scale=color_scale, legend=alt.Legend(title=None)),
             tooltip=[alt.Tooltip("date:T", title="Date"), "Series:N", alt.Tooltip("Value:Q", title="Direction")]
         )
         .properties(height=320)
@@ -184,9 +224,9 @@ if not filtered_hist.empty:
 else:
     st.info("No rows match the current filters (topic, sentiment, date).")
 
-
-# METRICS 
-
+# -------------------------------------------------
+# METRICS (update with filters)
+# -------------------------------------------------
 st.markdown('<div class="section-title">Classification Metrics</div>', unsafe_allow_html=True)
 metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
 if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
@@ -197,90 +237,106 @@ if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
     prec = precision_score(y_true, y_pred)
     rec  = recall_score(y_true, y_pred)
 
-    # KPI cards + pretty table
     k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Accuracy", f"{acc:.2%}")
-    k2.metric("F1 Score", f"{f1:.2f}")
-    k3.metric("Precision", f"{prec:.2f}")
-    k4.metric("Recall", f"{rec:.2f}")
+    k1.markdown(f"<div class='kpi-card'><b>Accuracy</b><br><span style='font-size:1.5rem;color:{PRIMARY_D}'>{acc:.2%}</span></div>", unsafe_allow_html=True)
+    k2.markdown(f"<div class='kpi-card'><b>F1 Score</b><br><span style='font-size:1.5rem;color:{PRIMARY_D}'>{f1:.2f}</span></div>", unsafe_allow_html=True)
+    k3.markdown(f"<div class='kpi-card'><b>Precision</b><br><span style='font-size:1.5rem;color:{PRIMARY_D}'>{prec:.2f}</span></div>", unsafe_allow_html=True)
+    k4.markdown(f"<div class='kpi-card'><b>Recall</b><br><span style='font-size:1.5rem;color:{PRIMARY_D}'>{rec:.2f}</span></div>", unsafe_allow_html=True)
 
     tbl = (pd.DataFrame({
             "Metric": ["Accuracy", "F1 Score", "Precision", "Recall"],
             "Value":  [acc, f1, prec, rec]
           })
           .set_index("Metric"))
-
     st.dataframe(
         tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Blues"),
         use_container_width=True
     )
 else:
-    st.info("Not enough class variation under current filters to compute metrics (need both Up and Down). Try broadening the sentiment range or removing the topic filter.")
+    st.info("Not enough class variation under current filters to compute metrics. Try broadening the sentiment range or removing the topic filter.")
 
-
-# S&P 500 TABLE 
-
+# -------------------------------------------------
+# S&P 500 TABLE (blue styling; optional dir colors)
+# -------------------------------------------------
 st.markdown('<div class="section-title">Recent S&P 500 Market Close</div>', unsafe_allow_html=True)
 last_7_days = today - timedelta(days=7)
 sp_week = sp500_df[sp500_df["date"] >= last_7_days].copy().sort_values("date", ascending=False)
 
+def format_arrow(val):
+    if pd.isna(val): return ""
+    return "↑" if val >= 0 else "↓"
+
 if not sp_week.empty:
-    # If you have a movement/return column, derive direction for color. Otherwise compute from close vs prior close.
-    if "close_price" in sp_week.columns:
+    if {"close_price"}.issubset(sp_week.columns):
         sp_week["prev_close"] = sp_week["close_price"].shift(-1)
-        sp_week["Direction"] = np.where(sp_week["close_price"] >= sp_week["prev_close"], "Up", "Down")
-        sp_week.drop(columns=["prev_close"], inplace=True)
-        def color_dir(val):
-            if val == "Up": return "background-color: #d9f2e5"  # greenish
-            if val == "Down": return "background-color: #fde0e0" # reddish
-            return ""
-        styled = sp_week.style.format(precision=2).apply(
-            lambda s: [color_dir(v) if s.name == "Direction" else "" for v in s], axis=0
-        )
+        sp_week["Return"] = (sp_week["close_price"] / sp_week["prev_close"] - 1.0) * 100
+        sp_week["Direction"] = np.where(sp_week["Return"] >= 0, "Up", "Down")
+        sp_week["Move"] = sp_week["Return"].map(lambda x: f"{format_arrow(x)} {x:,.2f}%")
+        show_cols = ["date", "close_price", "Move", "Direction"]
+        view = sp_week[show_cols].rename(columns={
+            "date": "Date", "close_price": "Close"
+        })
+
+        if USE_DIR_COLORS:
+            def color_dir(v):
+                if v == "Up": return "background-color:#E6F4EA"  # slight green only here
+                if v == "Down": return "background-color:#FDECEC" # slight red only here
+                return ""
+            styled = (view.style
+                      .format({"Close": "{:,.2f}"})
+                      .apply(lambda s: [color_dir(v) if s.name == "Direction" else "" for v in s], axis=0)
+                      .background_gradient(subset=["Close"], cmap="Blues"))
+        else:
+            styled = (view.style
+                      .format({"Close": "{:,.2f}"})
+                      .background_gradient(subset=["Close"], cmap="Blues"))
         st.dataframe(styled, use_container_width=True, hide_index=True)
     else:
         st.dataframe(sp_week, use_container_width=True, hide_index=True)
 else:
     st.info("No S&P 500 data in the last 7 days.")
 
-
-# TOPICS FROM LAST 7 DAYS 
-
+# -------------------------------------------------
+# TOPICS FROM LAST 7 DAYS (blue cards)
+# -------------------------------------------------
 st.markdown('<div class="section-title">Topics from the Last 7 Days</div>', unsafe_allow_html=True)
 topics_week = topics_df[topics_df["date"] >= last_7_days].sort_values("date", ascending=False)
-
 if not topics_week.empty and {"Dominant_Topic","Topic_Keywords"}.issubset(topics_week.columns):
     for _, row in topics_week.iterrows():
         st.markdown(f"""
-        <div style='padding:10px;margin-bottom:8px;background:#ffffff;border:1px solid #e9eef5;border-radius:12px;'>
-            <b>{row['date'].date()}</b> — <span style="color:{PRIMARY}">Topic #{row['Dominant_Topic']}</span><br>
+        <div style='padding:10px;margin-bottom:8px;background:{CARD_BG};border:1px solid {BORDER};border-radius:12px;'>
+            <b>{row['date'].date()}</b>
+            <span class="blue-pill">Topic #{row['Dominant_Topic']}</span><br>
             <span style="opacity:0.9">{row['Topic_Keywords']}</span>
         </div>
         """, unsafe_allow_html=True)
 else:
     st.info("No topic modeling data available for the past 7 days.")
 
-# WORDCLOUDS
-
+# -------------------------------------------------
+# WORDCLOUDS (blue colormaps)
+# -------------------------------------------------
 st.markdown('<div class="section-title">Topic Trends WordCloud</div>', unsafe_allow_html=True)
 if {"word", "label"}.issubset(set(topic_change_df.columns)):
     topic_change_df = topic_change_df.dropna(subset=["word", "label"])
-    text_up = " ".join(topic_change_df[topic_change_df["label"].astype(str).str.lower() == "up"]["word"].astype(str))
-    text_down = " ".join(topic_change_df[topic_change_df["label"].astype(str).str.lower() == "down"]["word"].astype(str))
+    sel = topic_change_df.copy()
+    sel["label"] = sel["label"].astype(str).str.lower()
+
+    text_up = " ".join(sel[sel["label"] == "up"]["word"].astype(str))
+    text_dn = " ".join(sel[sel["label"] == "down"]["word"].astype(str))
 
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Trending on Up Days")
         fig_up, ax_up = plt.subplots(figsize=(6, 4))
-        wc_up = WordCloud(background_color="white", colormap="Greens").generate(text_up if text_up else "NoData")
+        wc_up = WordCloud(background_color="white", colormap="Blues").generate(text_up if text_up else "NoData")
         ax_up.imshow(wc_up, interpolation="bilinear"); ax_up.axis("off")
         st.pyplot(fig_up)
     with col2:
         st.subheader("Trending on Down Days")
         fig_down, ax_down = plt.subplots(figsize=(6, 4))
-        wc_down = WordCloud(background_color="white", colormap="Reds").generate(text_down if text_down else "NoData")
+        wc_down = WordCloud(background_color="white", colormap="PuBu").generate(text_dn if text_dn else "NoData")
         ax_down.imshow(wc_down, interpolation="bilinear"); ax_down.axis("off")
         st.pyplot(fig_down)
 else:
     st.warning("Topic change data is missing required columns: 'word' and 'label'.")
-
