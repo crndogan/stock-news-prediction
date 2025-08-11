@@ -9,9 +9,8 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from wordcloud import WordCloud
 import os
 
-# -------------------------------------------------
+
 # PAGE / THEME
-# -------------------------------------------------
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
 
 PRIMARY = "#0B6EFD"     # blue
@@ -36,9 +35,9 @@ st.markdown(f"""
 
 st.title("Stock News & Market Movement Prediction")
 
-# -------------------------------------------------
-# DATA LOADING (with cache + version busting)
-# -------------------------------------------------
+
+# DATA LOADING 
+
 @st.cache_data(ttl=3600)
 def load_data(version=None):
     base = "notebooks"
@@ -70,16 +69,15 @@ with left:
 
 tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data(version_stamp())
 
-# -------------------------------------------------
+-
 # BASIC DATES / STATUS
-# -------------------------------------------------
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
 today = max(df["date"].max() for df in dfs if not df.empty).normalize()
 st.sidebar.info(f"📅 Latest data date: **{today.date()}**")
 
-# -------------------------------------------------
+
 # SIDEBAR FILTERS
-# -------------------------------------------------
+
 st.sidebar.markdown("### 🔍 Filters")
 st.sidebar.caption("Use the filters to update charts and metrics in real time.")
 
@@ -101,9 +99,9 @@ if not hist_df.empty:
 else:
     selected_date = today.date()
 
-# -------------------------------------------------
+
 # NEXT TRADING DAY PREDICTION
-# -------------------------------------------------
+
 st.markdown('<div class="section-title">Next Trading Day Prediction</div>', unsafe_allow_html=True)
 next_td = today + BDay(1)
 pred_row = tomorrow_df[tomorrow_df["date"] == next_td]
@@ -119,9 +117,9 @@ if not pred_row.empty:
 else:
     st.warning("No prediction available for the next trading day.")
 
-# -------------------------------------------------
+
 # SENTIMENT SNAPSHOT (today)
-# -------------------------------------------------
+
 st.markdown('<div class="section-title">Today’s Sentiment Snapshot</div>', unsafe_allow_html=True)
 today_sent = tone_df[tone_df["date"] == today]
 if not today_sent.empty:
@@ -132,9 +130,9 @@ if not today_sent.empty:
 else:
     st.info("No sentiment data for today.")
 
-# -------------------------------------------------
-# BUILD FILTERED HISTORY (topic + sentiment + date)
-# -------------------------------------------------
+
+#FILTERED HISTORY 
+
 # sentiment filter → dates that qualify
 tone_filtered = tone_df[tone_df["sent_compound"].between(*selected_sentiment)][["date"]].drop_duplicates()
 
@@ -161,9 +159,9 @@ for col in ["actual_label", "predicted_label"]:
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
 
-# -------------------------------------------------
+
 # INTERACTIVE CHART: Actual vs Predicted
-# -------------------------------------------------
+
 st.markdown('<div class="section-title">Actual vs Predicted Market Direction</div>', unsafe_allow_html=True)
 if not filtered_hist.empty:
     chart_df = filtered_hist[["date", "actual_numeric", "predicted_numeric"]].melt(
@@ -186,9 +184,9 @@ if not filtered_hist.empty:
 else:
     st.info("No rows match the current filters (topic, sentiment, date).")
 
-# -------------------------------------------------
-# METRICS (auto-update with filters)
-# -------------------------------------------------
+
+# METRICS 
+
 st.markdown('<div class="section-title">Classification Metrics</div>', unsafe_allow_html=True)
 metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
 if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
@@ -213,15 +211,15 @@ if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
           .set_index("Metric"))
 
     st.dataframe(
-        tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Greens"),
+        tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Blues"),
         use_container_width=True
     )
 else:
     st.info("Not enough class variation under current filters to compute metrics (need both Up and Down). Try broadening the sentiment range or removing the topic filter.")
 
-# -------------------------------------------------
-# S&P 500 TABLE (styled)
-# -------------------------------------------------
+
+# S&P 500 TABLE 
+
 st.markdown('<div class="section-title">Recent S&P 500 Market Close</div>', unsafe_allow_html=True)
 last_7_days = today - timedelta(days=7)
 sp_week = sp500_df[sp500_df["date"] >= last_7_days].copy().sort_values("date", ascending=False)
@@ -245,9 +243,9 @@ if not sp_week.empty:
 else:
     st.info("No S&P 500 data in the last 7 days.")
 
-# -------------------------------------------------
-# TOPICS FROM LAST 7 DAYS (compact cards)
-# -------------------------------------------------
+
+# TOPICS FROM LAST 7 DAYS 
+
 st.markdown('<div class="section-title">Topics from the Last 7 Days</div>', unsafe_allow_html=True)
 topics_week = topics_df[topics_df["date"] >= last_7_days].sort_values("date", ascending=False)
 
@@ -262,9 +260,8 @@ if not topics_week.empty and {"Dominant_Topic","Topic_Keywords"}.issubset(topics
 else:
     st.info("No topic modeling data available for the past 7 days.")
 
-# -------------------------------------------------
 # WORDCLOUDS
-# -------------------------------------------------
+
 st.markdown('<div class="section-title">Topic Trends WordCloud</div>', unsafe_allow_html=True)
 if {"word", "label"}.issubset(set(topic_change_df.columns)):
     topic_change_df = topic_change_df.dropna(subset=["word", "label"])
