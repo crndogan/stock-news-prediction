@@ -69,7 +69,7 @@ with left:
 
 tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data(version_stamp())
 
--
+
 # BASIC DATES / STATUS
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
 today = max(df["date"].max() for df in dfs if not df.empty).normalize()
