@@ -118,7 +118,7 @@ else:
     st.warning("No prediction available for the next trading day.")
 
 
-# SENTIMENT SNAPSHOT (today)
+# SENTIMENT SNAPSHOT 
 
 st.markdown('<div class="section-title">Today’s Sentiment Snapshot</div>', unsafe_allow_html=True)
 today_sent = tone_df[tone_df["date"] == today]
