@@ -213,7 +213,7 @@ if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
           .set_index("Metric"))
 
     st.dataframe(
-        tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Greens"),
+        tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Blues"),
         use_container_width=True
     )
 else:
