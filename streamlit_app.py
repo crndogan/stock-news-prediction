@@ -212,9 +212,9 @@ if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
       #    })
        #   .set_index("Metric"))
 
-    st.dataframe(
-        tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Greens"),
-        use_container_width=True
+    #st.dataframe(
+        #tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Greens"),
+     #   use_container_width=True
     )
 else:
     st.info("Not enough class variation under current filters to compute metrics (need both Up and Down). Try broadening the sentiment range or removing the topic filter.")
