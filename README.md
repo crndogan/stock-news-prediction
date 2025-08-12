@@ -41,17 +41,38 @@ All scripts are version-controlled, and the system is designed to be robust, rep
 
 ## Repository Structure
 
-├── .github/workflows/ # GitHub Actions for daily automation
-├── notebooks/ # Jupyter Notebooks for scraping, analysis, modeling
-├── streamlit_app.py # Streamlit dashboard code
-├── stock_news_tone.xlsx # Daily sentiment and emotion scores
-├── sp500_cleaned.csv # S&P 500 index data
-├── prediction_results.csv # Prediction history (actual vs. predicted)
-├── tomorrow_prediction.csv # Most recent prediction
-├── topic_modeling.csv # Topic clusters per day
-├── topic_up_down.csv # Keywords for up/down days
-├── requirements.txt # Python dependencies
-└── README.md # Project documentation (this file)
+.github/workflows/
+GitHub Actions for daily automation
+
+notebooks/
+Jupyter Notebooks for scraping, analysis, and modeling
+
+streamlit_app.py
+Streamlit dashboard application code
+
+stock_news_tone.xlsx
+Daily sentiment and emotion scores for each news day
+
+sp500_cleaned.csv
+Cleaned S&P 500 stock data
+
+prediction_results.csv
+Historical prediction results (actual vs. predicted)
+
+tomorrow_prediction.csv
+Latest prediction result for the upcoming trading day
+
+topic_modeling.csv
+Topic clusters generated from headlines
+
+topic_up_down.csv
+Keyword groupings for days when market went up or down
+
+requirements.txt
+Python dependencies for running the system
+
+README.md
+Project documentation and overview
 
 
 ## Technologies Used
