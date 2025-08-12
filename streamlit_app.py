@@ -1,57 +1,44 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import altair as alt
-import matplotlib.pyplot as plt
-from datetime import timedelta
-from pandas.tseries.offsets import BDay
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-from wordcloud import WordCloud
-import os
+# ---------------- HELPERS (robust remote fetch) ----------------
+import io, time, requests
 
-# ---------------- CONFIG ----------------
-st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
+# Optional: add a GitHub token in Streamlit secrets if repo is private or to avoid rate limits
+GITHUB_TOKEN = st.secrets.get("GITHUB_TOKEN", None)
 
-# Auto-refresh source: "remote" (GitHub raw URLs) or "local" (repo files)
-DATA_MODE = "remote"  
-RAW_BASE = st.secrets.get(
-    "RAW_BASE",
-    "https://raw.githubusercontent.com/crndogan/stock-news-prediction/main/notebooks"
-)
-LOCAL_BASE = "notebooks"
+def _fetch_bytes(url, retries=3, backoff=1.3, timeout=20):
+    headers = {"User-Agent": "streamlit-app"}
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"token {GITHUB_TOKEN}"
+    last_err = None
+    for i in range(retries):
+        try:
+            r = requests.get(url, headers=headers, timeout=timeout)
+            if r.status_code == 200:
+                return r.content
+            last_err = f"{r.status_code} {r.reason}"
+        except Exception as e:
+            last_err = str(e)
+        time.sleep(backoff**i)
+    raise RuntimeError(f"Failed to fetch {url} -> {last_err}")
 
-PRIMARY = "#0B6EFD"
-BG_SOFT = "#F5F8FC"
-
-st.markdown(f"""
-<style>
-  .main {{ background:{BG_SOFT}; }}
-  .block-container {{ padding-top: .75rem; }}
-  .kpi-card {{
-    padding: 12px 14px; background: #fff; border: 1px solid #e9eef5;
-    border-radius: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.04);
-  }}
-  .section-title {{ margin:.5rem 0 .25rem; font-weight:700; font-size:1.1rem; color:#0f1a2a; }}
-</style>
-""", unsafe_allow_html=True)
-
-st.title("Stock News & Market Movement Prediction")
-
-# ---------------- HELPERS ----------------
 def read_csv_remote(name):
-    return pd.read_csv(f"{RAW_BASE}/{name}", parse_dates=["date"])
+    url = f"{RAW_BASE}/{name}"
+    data = _fetch_bytes(url)
+    return pd.read_csv(io.BytesIO(data), parse_dates=["date"])
 
 def read_excel_remote(name):
-    return pd.read_excel(f"{RAW_BASE}/{name}", parse_dates=["date"])
+    url = f"{RAW_BASE}/{name}"
+    data = _fetch_bytes(url)
+    # requires 'openpyxl' in requirements.txt
+    return pd.read_excel(io.BytesIO(data), parse_dates=["date"], engine="openpyxl")
 
 def read_csv_local(name):
     return pd.read_csv(os.path.join(LOCAL_BASE, name), parse_dates=["date"])
 
 def read_excel_local(name):
-    return pd.read_excel(os.path.join(LOCAL_BASE, name), parse_dates=["date"])
+    return pd.read_excel(os.path.join(LOCAL_BASE, name), parse_dates=["date"], engine="openpyxl")
 
 # ---------------- DATA LOADING ----------------
-@st.cache_data(ttl=900)  # refresh from remote every 15 minutes; click button below to force-clear
+@st.cache_data(ttl=900)   # remote: refresh every 15 min (adjust as you like)
 def load_data_remote():
     tone = read_excel_remote("stock_news_tone.xlsx")
     hist = read_csv_remote("prediction_results.csv")
@@ -61,7 +48,7 @@ def load_data_remote():
     topic_change = read_csv_remote("topic_up_down.csv")
     return tone, hist, prices, tomorrow, topics, topic_change
 
-@st.cache_data(ttl=0)    # local: rely on manual cache clear or app redeploy
+@st.cache_data(ttl=0)     # local: relies on manual cache clear or redeploy
 def load_data_local():
     tone = read_excel_local("stock_news_tone.xlsx")
     hist = read_csv_local("prediction_results.csv")
@@ -77,7 +64,7 @@ with top_l:
     if st.button("🔄 Refresh data"):
         st.cache_data.clear()
 
-# Load (remote preferred)
+# Load ONCE (respect DATA_MODE)
 if DATA_MODE == "remote":
     tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data_remote()
 else:
@@ -89,6 +76,7 @@ for df_ in (tone_df, hist_df, sp500_df, tomorrow_df, topics_df):
         df_["date"] = pd.to_datetime(df_["date"]).dt.normalize()
 if "Dominant_Topic" in topics_df.columns:
     topics_df["Dominant_Topic"] = topics_df["Dominant_Topic"].astype(str)
+
 
 # ---------------- BASIC DATES ----------------
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
