@@ -1,69 +1,74 @@
-# 📈 Stock News & Market Movement Prediction
+# Stock News and Market Movement Prediction
 
-This project helps us understand how news headlines affect the stock market. It uses machine learning and natural language processing (NLP) to predict if the **S&P 500 index** will go **up or down** the next day based on the **tone of financial and political news**.
+This project explores how the sentiment and content of daily financial and political news headlines can help predict short-term movements in the S&P 500 index. It uses natural language processing (NLP) and machine learning to classify whether the market is likely to move up or down the next trading day.
 
-🧠 The system turns headlines into data, scores their **sentiment** and **emotions**, then uses a model to make daily predictions.
+By automating the collection and analysis of news data, this system provides a structured way to evaluate how headline tone and emotion may relate to market behavior.
 
-## 🔍 What This Project Does
+## Project Objectives
 
-- Collects financial and political news headlines every day using the **NewsData.io API**
-- Gets S&P 500 stock prices using the **yFinance** Python library
-- Cleans the news text (lowercase, punctuation removal, stopwords)
-- Calculates:
-  - **Sentiment scores** using VADER (positive, negative, compound)
-  - **Emotions** using NRCLex (like fear, trust, joy, anger)
-  - **Topics** using LDA topic modeling
-- Labels each day with **"Up" or "Down"** based on next-day market movement
-- Trains a **Random Forest** machine learning model
-- Predicts whether the market will go up or down tomorrow
-- Shares the results in an easy-to-use dashboard
+- Automatically collect daily financial and political headlines
+- Gather S&P 500 market data for the same time period
+- Clean and process headlines using standard NLP techniques
+- Apply sentiment scoring (VADER) and emotion detection (NRCLex)
+- Use topic modeling to group related news themes
+- Build a labeled dataset matching news sentiment with next-day market movement
+- Train a classification model (Random Forest) to predict future market direction
+- Share results via a web-based dashboard
 
-## 📊 Live Dashboard
+## Live Dashboard
 
-Check out the daily predictions and sentiment analysis here:  
-👉 [https://stock-news-headlines-prediction.streamlit.app/](https://stock-news-headlines-prediction.streamlit.app/)
+Access the prediction dashboard at the following link:  
+[https://stock-news-headlines-prediction.streamlit.app/](https://stock-news-headlines-prediction.streamlit.app/)
 
-The dashboard shows:
+The dashboard includes:
 
-- Next-day market prediction with confidence score
-- Historical performance chart (actual vs predicted)
-- Sentiment and emotion trends
-- Word clouds of popular topics on up/down market days
-- Table of S&P 500 market close data
+- Daily market movement predictions and confidence levels
+- Charts comparing predicted vs. actual market outcomes
+- Sentiment and emotion trends across days
+- Word clouds showing top topics during positive and negative market days
+- Historical stock close data for the S&P 500
 
-## ⚙️ GitHub Actions Automation
+## Automation with GitHub Actions
 
-The GitHub Action runs **every night** at 11:00 PM Pacific Time. It:
+This project includes a GitHub Actions workflow that automates the following tasks each day:
 
-1. Scrapes the latest headlines from NewsData.io
-2. Downloads the newest S&P 500 stock prices
-3. Cleans and scores the news
-4. Matches each day’s news with the next trading day's stock movement
-5. Makes a prediction using the machine learning model
-6. Saves the updated results to `.csv` files used in the dashboard
+1. Scrapes daily headlines from the NewsData.io API
+2. Downloads the most recent S&P 500 stock data using yFinance
+3. Cleans and preprocesses headlines for analysis
+4. Applies sentiment scoring and emotion tagging
+5. Merges news and stock data to update the training dataset
+6. Runs the trained model to generate a new prediction
+7. Saves results to CSV files used by the Streamlit dashboard
 
-✅ You can also **manually trigger** the workflow to refresh data or test updates.
+The workflow is scheduled to run nightly at 11:00 PM Pacific Time. It can also be triggered manually to test or refresh the system.
 
-All code, data, and model files are stored and versioned on this GitHub repo.
+## Tools and Technologies
 
-## 🛠️ Tools Used
+- Python (pandas, numpy, scikit-learn)
+- NLP Libraries: VADER, NRCLex
+- Topic Modeling: LDA
+- Data Sources: NewsData.io, yFinance
+- Dashboard: Streamlit
+- Automation: GitHub Actions
 
-- Python
-- Pandas, NumPy, scikit-learn
-- VADER Sentiment
-- NRCLex Emotion Detection
-- LDA Topic Modeling
-- Streamlit (for dashboard)
-- GitHub Actions (for automation)
-- yFinance & NewsData.io APIs
+## Intended Users
 
-## 🙋‍♀️ Who Is This For?
+This project is designed for:
 
-- Students learning data science and NLP
-- Analysts interested in connecting news to market movement
-- Investors who want to explore headline-based prediction
-- Instructors or researchers looking for real-world ML projects
+- Data analysts and scientists exploring financial NLP applications
+- Students learning how to build end-to-end data pipelines
+- Business users interested in how news sentiment may relate to market behavior
+- Researchers or instructors looking for real-world, reproducible use cases
 
----
+## Repository Structure
 
-📂 All code is open-source. Feel free to use or extend it for your own learning or research.
+- `notebooks/` – Jupyter Notebooks for data collection, preprocessing, and modeling
+- `streamlit_app.py` – Streamlit dashboard application script
+- `*.csv` / `*.xlsx` – Data files generated and used by the model
+- `requirements.txt` – Python package dependencies
+- `.github/workflows/` – Automation scripts for daily data updates
+
+## Summary
+
+This project demonstrates how unstructured news data can be converted into structured insights using NLP and machine learning. It offers a repeatable process for building daily financial predictions, and a flexible dashboard for visualizing results. The system is fully automated, version-controlled, and designed for educational and exploratory purposes.
+
