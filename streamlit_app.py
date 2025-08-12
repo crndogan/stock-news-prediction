@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from wordcloud import WordCloud
 import os
 
--
+
 # PAGE / THEME
 
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
@@ -80,7 +80,7 @@ dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
 today = max(df["date"].max() for df in dfs if not df.empty).normalize()
 st.sidebar.info(f"📅 Latest data date: **{today.date()}**")
 
--
+
 # SIDEBAR FILTERS
 
 st.sidebar.markdown("### 🔍 Filters")
