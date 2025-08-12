@@ -34,7 +34,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("Stock News & Market Movement Prediction")
+st.title("News Headline Sentiment Analysis & Market Movement Prediction")
 
 # DATA LOADING 
 
