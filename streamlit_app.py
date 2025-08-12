@@ -48,7 +48,10 @@ def load_data(version=None):
     tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
     topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
     topic_change = pd.read_csv(f"{base}/topic_up_down.csv")
-    return tone, hist, prices, tomorrow, topics, topic_change
+    # NEW: metrics
+    metrics_path = f"{base}/metrics.csv"
+    metrics = pd.read_csv(metrics_path, parse_dates=["date"]) if os.path.exists(metrics_path) else pd.DataFrame()
+    return tone, hist, prices, tomorrow, topics, topic_change, metrics
 
 def version_stamp():
     base = "notebooks"
@@ -58,17 +61,12 @@ def version_stamp():
         f"{base}/sp500_cleaned.csv",
         f"{base}/tomorrow_prediction.csv",
         f"{base}/topic_modeling.csv",
-        f"{base}/topic_up_down.csv"
+        f"{base}/topic_up_down.csv",
+        f"{base}/metrics.csv",  # NEW
     ]
     return tuple(os.path.getmtime(p) for p in files if os.path.exists(p))
 
-# Top controls
-left, right = st.columns([1,1])
-with left:
-    if st.button("🔄 Refresh data (clear cache)"):
-        st.cache_data.clear()
-
-tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data(version_stamp())
+tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df, metrics_hist = load_data(version_stamp())
 
 # -------------------------------------------------
 # BASIC DATES / STATUS
