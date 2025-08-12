@@ -9,11 +9,20 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from wordcloud import WordCloud
 import os
 
-# ---------------- PAGE / THEME ----------------
+# ---------------- CONFIG ----------------
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
+
+# Auto-refresh source: "remote" (GitHub raw URLs) or "local" (repo files)
+DATA_MODE = "remote"  
+RAW_BASE = st.secrets.get(
+    "RAW_BASE",
+    "https://raw.githubusercontent.com/crndogan/stock-news-prediction/main/notebooks"
+)
+LOCAL_BASE = "notebooks"
 
 PRIMARY = "#0B6EFD"
 BG_SOFT = "#F5F8FC"
+
 st.markdown(f"""
 <style>
   .main {{ background:{BG_SOFT}; }}
@@ -28,50 +37,62 @@ st.markdown(f"""
 
 st.title("Stock News & Market Movement Prediction")
 
+# ---------------- HELPERS ----------------
+def read_csv_remote(name):
+    return pd.read_csv(f"{RAW_BASE}/{name}", parse_dates=["date"])
+
+def read_excel_remote(name):
+    return pd.read_excel(f"{RAW_BASE}/{name}", parse_dates=["date"])
+
+def read_csv_local(name):
+    return pd.read_csv(os.path.join(LOCAL_BASE, name), parse_dates=["date"])
+
+def read_excel_local(name):
+    return pd.read_excel(os.path.join(LOCAL_BASE, name), parse_dates=["date"])
+
 # ---------------- DATA LOADING ----------------
-@st.cache_data(ttl=3600)
-def load_data(version=None):
-    base = "notebooks"
-    tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
-    hist = pd.read_csv(f"{base}/prediction_results.csv", parse_dates=["date"])
-    prices = pd.read_csv(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
-    tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
-    topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
-    topic_change = pd.read_csv(f"{base}/topic_up_down.csv")
-
-    # --- CRITICAL: normalize dates to midnight so joins & sliders behave ---
-    for df in (tone, hist, prices, tomorrow, topics):
-        if not df.empty:
-            df["date"] = pd.to_datetime(df["date"]).dt.normalize()
-
-    # --- CRITICAL: compare topics as strings to avoid int/str mismatches ---
-    if "Dominant_Topic" in topics.columns:
-        topics["Dominant_Topic"] = topics["Dominant_Topic"].astype(str)
-
+@st.cache_data(ttl=900)  # refresh from remote every 15 minutes; click button below to force-clear
+def load_data_remote():
+    tone = read_excel_remote("stock_news_tone.xlsx")
+    hist = read_csv_remote("prediction_results.csv")
+    prices = read_csv_remote("sp500_cleaned.csv")
+    tomorrow = read_csv_remote("tomorrow_prediction.csv")
+    topics = read_csv_remote("topic_modeling.csv")
+    topic_change = read_csv_remote("topic_up_down.csv")
     return tone, hist, prices, tomorrow, topics, topic_change
 
-def version_stamp():
-    base = "notebooks"
-    files = [
-        f"{base}/stock_news_tone.xlsx",
-        f"{base}/prediction_results.csv",
-        f"{base}/sp500_cleaned.csv",
-        f"{base}/tomorrow_prediction.csv",
-        f"{base}/topic_modeling.csv",
-        f"{base}/topic_up_down.csv"
-    ]
-    return tuple(os.path.getmtime(p) for p in files if os.path.exists(p))
+@st.cache_data(ttl=0)    # local: rely on manual cache clear or app redeploy
+def load_data_local():
+    tone = read_excel_local("stock_news_tone.xlsx")
+    hist = read_csv_local("prediction_results.csv")
+    prices = read_csv_local("sp500_cleaned.csv")
+    tomorrow = read_csv_local("tomorrow_prediction.csv")
+    topics = read_csv_local("topic_modeling.csv")
+    topic_change = read_csv_local("topic_up_down.csv")
+    return tone, hist, prices, tomorrow, topics, topic_change
 
-left, right = st.columns([1,1])
-with left:
-    if st.button("🔄 Refresh data (clear cache)"):
+# Refresh button
+top_l, _ = st.columns([1,1])
+with top_l:
+    if st.button("🔄 Refresh data"):
         st.cache_data.clear()
 
-tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data(version_stamp())
+# Load (remote preferred)
+if DATA_MODE == "remote":
+    tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data_remote()
+else:
+    tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df = load_data_local()
+
+# Normalize dates + topic dtype
+for df_ in (tone_df, hist_df, sp500_df, tomorrow_df, topics_df):
+    if not df_.empty:
+        df_["date"] = pd.to_datetime(df_["date"]).dt.normalize()
+if "Dominant_Topic" in topics_df.columns:
+    topics_df["Dominant_Topic"] = topics_df["Dominant_Topic"].astype(str)
 
 # ---------------- BASIC DATES ----------------
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
-today = max(df["date"].max() for df in dfs if not df.empty).normalize()
+today = max(df_["date"].max() for df_ in dfs if not df_.empty).normalize()
 st.sidebar.info(f"📅 Latest data date: **{today.date()}**")
 
 # ---------------- FILTERS ----------------
@@ -121,27 +142,22 @@ else:
     st.info("No sentiment data for today.")
 
 # ---------------- FILTERED HISTORY BUILD ----------------
-# sentiment filter → candidate dates
 tone_dates = tone_df.loc[tone_df["sent_compound"].between(*selected_sentiment), ["date"]].drop_duplicates()
 
-# optional topic filter (string compare)
 if selected_topic != "All" and not topics_df.empty:
-    topic_dates = topics_df.loc[topics_df["Dominant_Topic"].astype(str) == str(selected_topic), ["date"]].drop_duplicates()
+    topic_dates = topics_df.loc[topics_df["Dominant_Topic"] == str(selected_topic), ["date"]].drop_duplicates()
     driver_dates = pd.merge(tone_dates, topic_dates, on="date", how="inner")
 else:
     driver_dates = tone_dates
 
-# date ceiling
 driver_dates = driver_dates[driver_dates["date"] <= pd.to_datetime(selected_date)]
 
-# join with history and sort
 filtered_hist = (
     pd.merge(hist_df.copy(), driver_dates, on="date", how="inner")
       .sort_values("date")
       .reset_index(drop=True)
 )
 
-# map labels robustly
 label_map = {"Up": 1, "Down": 0, 1: 1, 0: 0, "1": 1, "0": 0}
 for col in ["actual_label", "predicted_label"]:
     if col in filtered_hist.columns:
@@ -190,25 +206,33 @@ if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
     k2.metric("F1 Score", f"{f1:.2f}")
     k3.metric("Precision", f"{prec:.2f}")
     k4.metric("Recall", f"{rec:.2f}")
-
-    # Optional tiny hint of how many days included
-    st.caption(f"Based on {len(metrics_df)} trading days under current filters.")
+    st.caption(f"Based on {len(metrics_df)} trading days under current filters. Source: {DATA_MODE.upper()}")
 else:
     st.info("Not enough class variation under current filters to compute metrics (need both Up and Down).")
 
-# ---------------- S&P TABLE ----------------
+# ---------------- S&P TABLE (colored Direction) ----------------
 st.markdown('<div class="section-title">Recent S&P 500 Market Close</div>', unsafe_allow_html=True)
 last_7_days = today - timedelta(days=7)
 sp_week = sp500_df[sp500_df["date"] >= last_7_days].copy().sort_values("date", ascending=False)
+
 if not sp_week.empty:
     if "close_price" in sp_week.columns:
         sp_week["prev_close"] = sp_week["close_price"].shift(-1)
-        sp_week["Direction"] = np.where(sp_week["close_price"] >= sp_week["prev_close"], "Up", "Down")
-        sp_week.drop(columns=["prev_close"], inplace=True)
-        st.dataframe(
-            sp_week.style.format(precision=2),
-            use_container_width=True, hide_index=True
-        )
+        sp_week["Return"] = (sp_week["close_price"] / sp_week["prev_close"] - 1.0) * 100
+        sp_week["Direction"] = np.where(sp_week["Return"] >= 0, "Up", "Down")
+        sp_week["Move"] = sp_week["Return"].map(lambda x: ("" if pd.isna(x) else ("↑" if x >= 0 else "↓")) + ("" if pd.isna(x) else f" {x:,.2f}%"))
+        view = sp_week[["date", "close_price", "Move", "Direction"]].rename(columns={"date":"Date","close_price":"Close"})
+
+        def color_dir_col(s: pd.Series):
+            # apply to the whole column at once
+            return np.where(s.eq("Up"), "background-color: #E6F4EA; color:#0f5132;",
+                            np.where(s.eq("Down"), "background-color: #FDECEC; color:#842029;", ""))
+
+        styled = (view.style
+                  .format({"Close": "{:,.2f}"})
+                  .apply(lambda df: [""]*len(df), axis=1)  # keep other cols default
+                  .apply(color_dir_col, subset=["Direction"]))
+        st.dataframe(styled, use_container_width=True, hide_index=True)
     else:
         st.dataframe(sp_week, use_container_width=True, hide_index=True)
 else:
