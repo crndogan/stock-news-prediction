@@ -219,20 +219,7 @@ if not showed_from_csv:
         st.caption("Showing metrics computed from current filters (metrics.csv not available).")
     else:
         st.info("Not enough class variation to compute metrics, and metrics.csv not found. Loosen filters or generate metrics.csv.")
-    if not metrics_hist.empty and "accuracy" in metrics_hist.columns:
-    trend = metrics_hist.sort_values("date").tail(100)  # last 100 runs
-    acc_chart = (
-        alt.Chart(trend)
-        .mark_line(point=True)
-        .encode(x=alt.X("date:T", title="Run Time"),
-                y=alt.Y("accuracy:Q", title="Accuracy"),
-                tooltip=[alt.Tooltip("date:T"), alt.Tooltip("accuracy:Q", format=".2%")])
-        .properties(height=160)
-    )
-    st.altair_chart(acc_chart, use_container_width=True)
-  
-
-
+    
 # -------------------------------------------------
 # S&P 500 TABLE (styled)
 # -------------------------------------------------
