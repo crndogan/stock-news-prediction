@@ -1,8 +1,9 @@
-# ---------------- HELPERS (robust remote fetch) ----------------
-import io, time, requests
+import streamlit as st
+import os, io, time, requests  # make sure requests is imported before helpers
 
-# Optional: add a GitHub token in Streamlit secrets if repo is private or to avoid rate limits
-GITHUB_TOKEN = st.secrets.get("GITHUB_TOKEN", None)
+GITHUB_TOKEN = (st.secrets.get("GITHUB_TOKEN", None)
+                if hasattr(st, "secrets") else None) or os.getenv("GITHUB_TOKEN")
+
 
 def _fetch_bytes(url, retries=3, backoff=1.3, timeout=20):
     headers = {"User-Agent": "streamlit-app"}
