@@ -37,7 +37,7 @@ st.markdown(f"""
 st.title("Stock News & Market Movement Prediction")
 
 # -------------------------------------------------
-# DATA LOADING (with cache + version busting)
+# DATA LOADING 
 # -------------------------------------------------
 @st.cache_data(ttl=3600)
 def load_data(version=None):
@@ -187,7 +187,7 @@ else:
     st.info("No rows match the current filters (topic, sentiment, date).")
 
 # -------------------------------------------------
-# METRICS (auto-update with filters)
+# METRICS 
 # -------------------------------------------------
 st.markdown('<div class="section-title">Classification Metrics</div>', unsafe_allow_html=True)
 metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
@@ -199,25 +199,7 @@ if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
     prec = precision_score(y_true, y_pred)
     rec  = recall_score(y_true, y_pred)
 
-    # KPI cards + pretty table
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Accuracy", f"{acc:.2%}")
-    k2.metric("F1 Score", f"{f1:.2f}")
-    k3.metric("Precision", f"{prec:.2f}")
-    k4.metric("Recall", f"{rec:.2f}")
 
-    tbl = (pd.DataFrame({
-            "Metric": ["Accuracy", "F1 Score", "Precision", "Recall"],
-            "Value":  [acc, f1, prec, rec]
-          })
-          .set_index("Metric"))
-
-    st.dataframe(
-        tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Greens"),
-        use_container_width=True
-    )
-else:
-    st.info("Not enough class variation under current filters to compute metrics (need both Up and Down). Try broadening the sentiment range or removing the topic filter.")
 
 # -------------------------------------------------
 # S&P 500 TABLE (styled)
