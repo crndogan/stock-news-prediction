@@ -188,34 +188,50 @@ else:
 # METRICS 
 # -------------------------------------------------
 st.markdown('<div class="section-title">Classification Metrics</div>', unsafe_allow_html=True)
-metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
-if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
-    y_true = metrics_df["actual_numeric"]
-    y_pred = metrics_df["predicted_numeric"]
-    acc  = accuracy_score(y_true, y_pred)
-    f1   = f1_score(y_true, y_pred)
-    prec = precision_score(y_true, y_pred)
-    rec  = recall_score(y_true, y_pred)
 
-    # KPI cards + pretty table
+showed_from_csv = False
+if not metrics_hist.empty and {"accuracy","f1_score","precision","recall","date"}.issubset(metrics_hist.columns):
+    latest = metrics_hist.sort_values("date").iloc[-1]
     k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Accuracy", f"{acc:.2%}")
-    k2.metric("F1 Score", f"{f1:.2f}")
-    k3.metric("Precision", f"{prec:.2f}")
-    k4.metric("Recall", f"{rec:.2f}")
+    k1.metric("Accuracy",  f"{float(latest['accuracy']):.2%}")
+    k2.metric("F1 Score",  f"{float(latest['f1_score']):.2f}")
+    k3.metric("Precision", f"{float(latest['precision']):.2f}")
+    k4.metric("Recall",    f"{float(latest['recall']):.2f}")
+    st.caption(f"Last updated: {pd.to_datetime(latest['date']).strftime('%Y-%m-%d %H:%M:%S')}")
+    showed_from_csv = True
 
-   # tbl = (pd.DataFrame({
-    #        "Metric": ["Accuracy", "F1 Score", "Precision", "Recall"],
-     #       "Value":  [acc, f1, prec, rec]
-      #    })
-       #   .set_index("Metric"))
+# Fallback to live calculation if no metrics.csv (or columns missing)
+if not showed_from_csv:
+    metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
+    if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
+        y_true = metrics_df["actual_numeric"]
+        y_pred = metrics_df["predicted_numeric"]
+        acc  = accuracy_score(y_true, y_pred)
+        f1   = f1_score(y_true, y_pred)
+        prec = precision_score(y_true, y_pred)
+        rec  = recall_score(y_true, y_pred)
 
-    #st.dataframe(
-        #tbl.style.format({"Value": "{:.3f}"}).background_gradient(axis=None, cmap="Greens"),
-     #   use_container_width=True
-  #  )
-else:
-    st.info("Not enough class variation under current filters to compute metrics (need both Up and Down). Try broadening the sentiment range or removing the topic filter.")
+        k1, k2, k3, k4 = st.columns(4)
+        k1.metric("Accuracy", f"{acc:.2%}")
+        k2.metric("F1 Score", f"{f1:.2f}")
+        k3.metric("Precision", f"{prec:.2f}")
+        k4.metric("Recall", f"{rec:.2f}")
+        st.caption("Showing metrics computed from current filters (metrics.csv not available).")
+    else:
+        st.info("Not enough class variation to compute metrics, and metrics.csv not found. Loosen filters or generate metrics.csv.")
+    if not metrics_hist.empty and "accuracy" in metrics_hist.columns:
+    trend = metrics_hist.sort_values("date").tail(100)  # last 100 runs
+    acc_chart = (
+        alt.Chart(trend)
+        .mark_line(point=True)
+        .encode(x=alt.X("date:T", title="Run Time"),
+                y=alt.Y("accuracy:Q", title="Accuracy"),
+                tooltip=[alt.Tooltip("date:T"), alt.Tooltip("accuracy:Q", format=".2%")])
+        .properties(height=160)
+    )
+    st.altair_chart(acc_chart, use_container_width=True)
+  
+
 
 # -------------------------------------------------
 # S&P 500 TABLE (styled)
