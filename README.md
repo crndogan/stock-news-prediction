@@ -1,74 +1,82 @@
 # Stock News and Market Movement Prediction
 
-This project explores how the sentiment and content of daily financial and political news headlines can help predict short-term movements in the S&P 500 index. It uses natural language processing (NLP) and machine learning to classify whether the market is likely to move up or down the next trading day.
+This repository contains an end-to-end system that predicts daily S&P 500 market direction using financial and political news headlines. The project combines natural language processing (NLP), machine learning, and automation to explore how the sentiment and emotional tone of news headlines may relate to next-day market movement.
 
-By automating the collection and analysis of news data, this system provides a structured way to evaluate how headline tone and emotion may relate to market behavior.
+All data is collected, processed, and modeled automatically using Python scripts and GitHub Actions.
 
-## Project Objectives
+## Project Summary
 
-- Automatically collect daily financial and political headlines
-- Gather S&P 500 market data for the same time period
-- Clean and process headlines using standard NLP techniques
-- Apply sentiment scoring (VADER) and emotion detection (NRCLex)
-- Use topic modeling to group related news themes
-- Build a labeled dataset matching news sentiment with next-day market movement
-- Train a classification model (Random Forest) to predict future market direction
-- Share results via a web-based dashboard
+This project was developed as part of a capstone focused on using unstructured news text to make structured financial predictions. Every day, the system scrapes fresh news headlines, calculates sentiment and emotion scores, and merges the data with historical S&P 500 performance. A machine learning model (Random Forest) is then used to predict whether the market will go up or down the following day.
+
+The prediction and analysis are published on a public dashboard, making the results accessible for investors, analysts, and students.
 
 ## Live Dashboard
 
-Access the prediction dashboard at the following link:  
+View the latest prediction and trends:  
 [https://stock-news-headlines-prediction.streamlit.app/](https://stock-news-headlines-prediction.streamlit.app/)
 
 The dashboard includes:
 
-- Daily market movement predictions and confidence levels
-- Charts comparing predicted vs. actual market outcomes
-- Sentiment and emotion trends across days
-- Word clouds showing top topics during positive and negative market days
-- Historical stock close data for the S&P 500
+- Next trading day prediction and model confidence
+- Historical accuracy and performance metrics
+- Sentiment and emotion score trends
+- Word clouds highlighting topics associated with market up/down days
+- Table of recent S&P 500 closing data
 
-## Automation with GitHub Actions
+## GitHub Actions: Daily Automation
 
-This project includes a GitHub Actions workflow that automates the following tasks each day:
+This repository uses GitHub Actions to automate the full data pipeline. The workflow is scheduled to run every day at 11:00 PM Pacific Time. It can also be triggered manually.
 
-1. Scrapes daily headlines from the NewsData.io API
-2. Downloads the most recent S&P 500 stock data using yFinance
-3. Cleans and preprocesses headlines for analysis
-4. Applies sentiment scoring and emotion tagging
-5. Merges news and stock data to update the training dataset
-6. Runs the trained model to generate a new prediction
-7. Saves results to CSV files used by the Streamlit dashboard
+The GitHub Action performs the following steps:
 
-The workflow is scheduled to run nightly at 11:00 PM Pacific Time. It can also be triggered manually to test or refresh the system.
+1. Scrapes daily financial and political headlines using the NewsData.io API.
+2. Downloads S&P 500 data using the yFinance library.
+3. Cleans and processes the headlines (text normalization, punctuation removal, etc.).
+4. Applies sentiment scoring (VADER) and emotion detection (NRCLex).
+5. Merges news and stock data to create a labeled dataset.
+6. Runs a Random Forest model to make a new prediction.
+7. Updates all relevant `.csv` and `.xlsx` files used by the Streamlit app.
 
-## Tools and Technologies
-
-- Python (pandas, numpy, scikit-learn)
-- NLP Libraries: VADER, NRCLex
-- Topic Modeling: LDA
-- Data Sources: NewsData.io, yFinance
-- Dashboard: Streamlit
-- Automation: GitHub Actions
-
-## Intended Users
-
-This project is designed for:
-
-- Data analysts and scientists exploring financial NLP applications
-- Students learning how to build end-to-end data pipelines
-- Business users interested in how news sentiment may relate to market behavior
-- Researchers or instructors looking for real-world, reproducible use cases
+All scripts are version-controlled, and the system is designed to be robust, reproducible, and extensible.
 
 ## Repository Structure
 
-- `notebooks/` – Jupyter Notebooks for data collection, preprocessing, and modeling
-- `streamlit_app.py` – Streamlit dashboard application script
-- `*.csv` / `*.xlsx` – Data files generated and used by the model
-- `requirements.txt` – Python package dependencies
-- `.github/workflows/` – Automation scripts for daily data updates
+├── .github/workflows/ # GitHub Actions for daily automation
+├── notebooks/ # Jupyter Notebooks for scraping, analysis, modeling
+├── streamlit_app.py # Streamlit dashboard code
+├── stock_news_tone.xlsx # Daily sentiment and emotion scores
+├── sp500_cleaned.csv # S&P 500 index data
+├── prediction_results.csv # Prediction history (actual vs. predicted)
+├── tomorrow_prediction.csv # Most recent prediction
+├── topic_modeling.csv # Topic clusters per day
+├── topic_up_down.csv # Keywords for up/down days
+├── requirements.txt # Python dependencies
+└── README.md # Project documentation (this file)
 
-## Summary
 
-This project demonstrates how unstructured news data can be converted into structured insights using NLP and machine learning. It offers a repeatable process for building daily financial predictions, and a flexible dashboard for visualizing results. The system is fully automated, version-controlled, and designed for educational and exploratory purposes.
+## Technologies Used
 
+- Python (pandas, numpy, scikit-learn)
+- VADER Sentiment Scoring
+- NRCLex Emotion Detection
+- LDA Topic Modeling
+- Streamlit (Dashboard)
+- GitHub Actions (Automation)
+- NewsData.io (News API)
+- yFinance (Market Data)
+
+## Use Cases
+
+This project is designed for:
+
+- Data analysts and students exploring NLP in finance
+- Investors interested in daily headline-based market sentiment
+- Educators and researchers looking for applied machine learning workflows
+
+## License
+
+This project is for educational and academic purposes.
+
+
+
+ 
