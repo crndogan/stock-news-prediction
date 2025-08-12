@@ -2,6 +2,8 @@ streamlit
 pandas
 numpy
 matplotlib
+altair
 wordcloud
 openpyxl
 scikit-learn
+requests
