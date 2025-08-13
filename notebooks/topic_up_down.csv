@@ -2,6 +2,7 @@ word,count,label
 promising,5,Up
 biotech,3,Up
 consider,4,Up
+july,37,Up
 best,16,Up
 travel,2,Up
 worth,7,Up
@@ -10,18 +11,20 @@ small,3,Up
 cap,2,Up
 follow,10,Up
 bailard,10,Up
+inc,286,Up
 buy,57,Up
+share,204,Up
 axon,2,Up
 enterprise,4,Up
 nasdaqaxon,2,Up
 airline,8,Up
 trump,133,Up
 tax,4,Up
+law,12,Up
 reshape,1,Up
 benefit,3,Up
 end,11,Up
 magnificent,1,Up
-seven,2,Up
 bos,3,Up
 stop,1,Up
 flatter,1,Up
@@ -59,6 +62,7 @@ wealth,50,Up
 discussion,1,Up
 prediction,4,Up
 annaly,1,Up
+capital,83,Up
 budget,2,Up
 gaming,1,Up
 phone,2,Up
@@ -77,11 +81,12 @@ corporation,71,Up
 nasdaqqdel,2,Up
 sbi,4,Up
 security,18,Up
-ltd,30,Up
 purchase,32,Up
 fabrinet,1,Up
 nysefn,1,Up
 apollon,4,Up
+management,95,Up
+llc,191,Up
 acquires,26,Up
 franklin,3,Up
 bsp,1,Up
@@ -173,6 +178,7 @@ apogee,1,Up
 nasdaqapog,1,Up
 signaturefd,3,Up
 lower,10,Up
+holding,78,Up
 interpublic,1,Up
 nyseipg,1,Up
 envestnet,2,Up
@@ -182,6 +188,7 @@ nyseyeti,2,Up
 protagonist,1,Up
 therapeutic,4,Up
 nasdaqptgx,1,Up
+sold,33,Up
 immunitybio,1,Up
 nasdaqibrx,1,Up
 zurn,1,Up
@@ -193,6 +200,7 @@ consumer,2,Up
 product,4,Up
 nasdaqreyn,1,Up
 spdr,4,Up
+etf,58,Up
 nysearcaxbi,1,Up
 edgestream,2,Up
 partner,47,Up
@@ -248,6 +256,7 @@ coupang,2,Up
 nysecpng,2,Up
 lowered,13,Up
 business,25,Up
+summarybrief,13,Up
 rincon,1,Up
 broadcasting,1,Up
 local,3,Up
@@ -343,6 +352,7 @@ neurogene,1,Up
 nasdaqngne,1,Up
 survey,4,Up
 hormel,2,Up
+food,11,Up
 nysehrl,2,Up
 versus,6,Up
 china,10,Up
@@ -607,6 +617,7 @@ rest,1,Up
 expect,4,Up
 harvard,2,Up
 administration,14,Up
+court,36,Up
 vances,3,Up
 marco,2,Up
 rubios,2,Up
@@ -750,6 +761,7 @@ precinct,1,Up
 reject,1,Up
 cornerstone,1,Up
 quarterly,14,Up
+june,2,Up
 deutsche,1,Up
 bank,27,Up
 aktiengesellschaft,1,Up
@@ -783,6 +795,7 @@ month,1,Up
 hii,1,Up
 summer,4,Up
 intern,2,Up
+case,9,Up
 present,1,Up
 finding,2,Up
 samsung,3,Up
@@ -813,7 +826,6 @@ delta,2,Up
 plane,2,Up
 minneapolis,1,Up
 avoids,1,Up
-near,12,Up
 collision,1,Up
 bomber,1,Up
 iran,3,Up
@@ -831,6 +843,7 @@ fsa,1,Up
 reimbursement,1,Up
 biogen,3,Up
 bet,2,Up
+big,11,Up
 billion,6,Up
 expansion,1,Up
 manufacturing,4,Up
@@ -1242,6 +1255,7 @@ snuff,1,Up
 bias,3,Up
 cbs,4,Up
 fcc,3,Up
+news,10,Up
 practice,1,Up
 journalism,1,Up
 julio,1,Up
@@ -1251,6 +1265,7 @@ whining,1,Up
 illegals,1,Up
 cleaning,1,Up
 toilet,1,Up
+day,8,Up
 niagara,1,Up
 fall,4,Up
 ran,1,Up
@@ -1326,6 +1341,7 @@ trend,2,Up
 drink,2,Up
 soda,1,Up
 golden,3,Up
+letter,24,Up
 epstein,40,Up
 ghost,1,Up
 haunting,1,Up
@@ -1538,7 +1554,6 @@ speech,2,Up
 pool,3,Up
 across,6,Up
 recall,5,Up
-nine,3,Up
 evaluating,1,Up
 syscos,1,Up
 syy,1,Up
@@ -2019,7 +2034,6 @@ compassion,1,Up
 humanity,1,Up
 tulsi,2,Up
 deputy,1,Up
-hundred,1,Up
 criminal,2,Up
 soon,1,Up
 dismissed,1,Up
@@ -3776,6 +3790,7 @@ mid,1,Up
 incident,1,Up
 neon,1,Down
 bloom,1,Down
+inc,90,Down
 announces,4,Down
 successful,1,Down
 launch,1,Down
@@ -3810,11 +3825,15 @@ ribboncutting,1,Down
 tempus,6,Down
 wealth,33,Down
 planning,6,Down
+llc,87,Down
 alphabet,6,Down
 nasdaqgoog,6,Down
 neo,1,Down
 ivy,1,Down
+capital,7,Down
+management,12,Down
 cut,44,Down
+holding,18,Down
 johnson,4,Down
 nysejnj,2,Down
 nicholas,2,Down
@@ -3870,6 +3889,7 @@ earning,1,Down
 data,2,Down
 next,2,Down
 sport,2,Down
+summarybrief,2,Down
 nearshoring,38,Down
 smart,38,Down
 cost,38,Down
@@ -3877,6 +3897,7 @@ scale,38,Down
 business,40,Down
 kpn,2,Down
 completes,2,Down
+share,82,Down
 buyback,2,Down
 walmart,3,Down
 selling,6,Down
@@ -3931,6 +3952,7 @@ face,3,Down
 value,7,Down
 visa,1,Down
 nysev,1,Down
+sold,14,Down
 panoramic,1,Down
 investment,48,Down
 advisor,34,Down
@@ -4042,6 +4064,7 @@ financial,11,Down
 hedeker,1,Down
 stake,12,Down
 vanguard,8,Down
+etf,34,Down
 nysearcavoo,1,Down
 buy,13,Down
 boost,3,Down
@@ -4089,6 +4112,7 @@ didnt,1,Down
 tesla,2,Down
 bos,1,Down
 subsidy,1,Down
+news,7,Down
 summary,6,Down
 sylacauga,1,Down
 voter,1,Down
@@ -4128,6 +4152,7 @@ history,1,Down
 axing,1,Down
 book,2,Down
 slavery,1,Down
+letter,3,Down
 editor,1,Down
 wallis,1,Down
 black,1,Down
@@ -4140,6 +4165,7 @@ kid,20,Down
 adult,20,Down
 starved,66,Down
 death,66,Down
+july,20,Down
 hunger,21,Down
 surge,20,Down
 park,1,Down
@@ -4438,7 +4464,6 @@ multisector,1,Down
 income,1,Down
 nysearcacgms,1,Down
 phoenix,5,Down
-ltd,7,Down
 barrick,1,Down
 mining,1,Down
 nyseb,1,Down
@@ -4548,6 +4573,7 @@ invest,1,Down
 direction,1,Down
 sure,1,Down
 forum,1,Down
+case,1,Down
 dont,1,Down
 away,1,Down
 vision,1,Down
@@ -4588,6 +4614,7 @@ kapitalo,7,Down
 investimentos,7,Down
 ltda,7,Down
 flower,1,Down
+food,1,Down
 nyseflo,1,Down
 verizon,1,Down
 communication,1,Down
