@@ -11,7 +11,6 @@ import os
 
 
 # PAGE / THEME
-
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
 
 PRIMARY = "#0B6EFD"     # blue
@@ -37,7 +36,6 @@ st.markdown(f"""
 st.title("News Headline Sentiment Analysis & Market Movement Prediction")
 
 # DATA LOADING 
-
 @st.cache_data(ttl=3600)
 def load_data(version=None):
     base = "notebooks"
@@ -46,11 +44,19 @@ def load_data(version=None):
     prices = pd.read_csv(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
     tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
     topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
-    topic_change = pd.read_csv(f"{base}/topic_up_down.csv")
-    # NEW: metrics
+    wc_path = f"{base}/wordcloud.csv"
+    topic_change_path = f"{base}/topic_up_down.csv"
+    if os.path.exists(wc_path):
+        wordcloud_df = pd.read_csv(wc_path)
+    elif os.path.exists(topic_change_path):
+        wordcloud_df = pd.read_csv(topic_change_path)
+    else:
+        wordcloud_df = pd.DataFrame(columns=["word", "count", "label"])
+
+    # metrics
     metrics_path = f"{base}/metrics.csv"
     metrics = pd.read_csv(metrics_path, parse_dates=["date"]) if os.path.exists(metrics_path) else pd.DataFrame()
-    return tone, hist, prices, tomorrow, topics, topic_change, metrics
+    return tone, hist, prices, tomorrow, topics, wordcloud_df, metrics
 
 def version_stamp():
     base = "notebooks"
@@ -61,7 +67,8 @@ def version_stamp():
         f"{base}/tomorrow_prediction.csv",
         f"{base}/topic_modeling.csv",
         f"{base}/topic_up_down.csv",
-        f"{base}/metrics.csv",  # NEW
+        f"{base}/wordcloud.csv",   # NEW
+        f"{base}/metrics.csv",     # NEW
     ]
     return tuple(os.path.getmtime(p) for p in files if os.path.exists(p))
 
@@ -71,18 +78,16 @@ with left:
     if st.button("🔄 Refresh data"):
         st.cache_data.clear()
 
-tone_df, hist_df, sp500_df, tomorrow_df, topics_df, topic_change_df, metrics_hist = load_data(version_stamp())
+tone_df, hist_df, sp500_df, tomorrow_df, topics_df, wordcloud_df, metrics_hist = load_data(version_stamp())
 
 
 # BASIC DATES / STATUS
-
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
 today = max(df["date"].max() for df in dfs if not df.empty).normalize()
 st.sidebar.info(f"📅 Latest data date: **{today.date()}**")
 
 
 # SIDEBAR FILTERS
-
 st.sidebar.markdown("### 🔍 Filters")
 st.sidebar.caption("Use the filters to update charts and metrics in real time.")
 
@@ -106,7 +111,6 @@ else:
 
 
 # NEXT TRADING DAY PREDICTION
-
 st.markdown('<div class="section-title">Next Trading Day Prediction</div>', unsafe_allow_html=True)
 next_td = today + BDay(1)
 pred_row = tomorrow_df[tomorrow_df["date"] == next_td]
@@ -124,7 +128,6 @@ else:
 
 
 # SENTIMENT SNAPSHOT 
-
 st.markdown('<div class="section-title">Today’s Sentiment Snapshot</div>', unsafe_allow_html=True)
 today_sent = tone_df[tone_df["date"] == today]
 if not today_sent.empty:
@@ -137,11 +140,8 @@ else:
 
 
 # BUILD FILTERED HISTORY 
-
-# sentiment filter → dates that qualify
 tone_filtered = tone_df[tone_df["sent_compound"].between(*selected_sentiment)][["date"]].drop_duplicates()
 
-# optional topic filter → dates that match the chosen Dominant_Topic
 if selected_topic != "All" and not topics_df.empty:
     topic_mask = topics_df["Dominant_Topic"] == selected_topic
     topic_dates = topics_df.loc[topic_mask, ["date"]].drop_duplicates()
@@ -149,13 +149,9 @@ if selected_topic != "All" and not topics_df.empty:
 else:
     driver_dates = tone_filtered
 
-# date ceiling filter
 driver_dates = driver_dates[driver_dates["date"] <= pd.to_datetime(selected_date)]
-
-# join with history (predictions)
 filtered_hist = pd.merge(hist_df, driver_dates, on="date", how="inner").sort_values("date")
 
-# numeric labels
 label_map = {"Up": 1, "Down": 0, 1:1, 0:0}
 for col in ["actual_label", "predicted_label"]:
     if filtered_hist[col].dtype == "O":
@@ -166,7 +162,6 @@ filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_
 
 
 # INTERACTIVE CHART: Actual vs Predicted
-
 st.markdown('<div class="section-title">Actual vs Predicted Market Direction</div>', unsafe_allow_html=True)
 if not filtered_hist.empty:
     chart_df = filtered_hist[["date", "actual_numeric", "predicted_numeric"]].melt(
@@ -191,7 +186,6 @@ else:
 
 
 # METRICS 
-
 st.markdown('<div class="section-title">Classification Metrics</div>', unsafe_allow_html=True)
 
 showed_from_csv = False
@@ -205,7 +199,6 @@ if not metrics_hist.empty and {"accuracy","f1_score","precision","recall","date"
     st.caption(f"Last updated: {pd.to_datetime(latest['date']).strftime('%Y-%m-%d %H:%M:%S')}")
     showed_from_csv = True
 
-# Fallback to live calculation if no metrics.csv (or columns missing)
 if not showed_from_csv:
     metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
     if not metrics_df.empty and metrics_df["actual_numeric"].nunique() == 2:
@@ -225,21 +218,20 @@ if not showed_from_csv:
     else:
         st.info("Not enough class variation to compute metrics, and metrics.csv not found. Loosen filters or generate metrics.csv.")
 
-# S&P 500 TABLE
 
+# S&P 500 TABLE
 st.markdown('<div class="section-title">Recent S&P 500 Market Close</div>', unsafe_allow_html=True)
 last_7_days = today - timedelta(days=7)
 sp_week = sp500_df[sp500_df["date"] >= last_7_days].copy().sort_values("date", ascending=False)
 
 if not sp_week.empty:
-    # If you have a movement/return column, derive direction for color. Otherwise compute from close vs prior close.
     if "close_price" in sp_week.columns:
         sp_week["prev_close"] = sp_week["close_price"].shift(-1)
         sp_week["Direction"] = np.where(sp_week["close_price"] >= sp_week["prev_close"], "Up", "Down")
         sp_week.drop(columns=["prev_close"], inplace=True)
         def color_dir(val):
-            if val == "Up": return "background-color: #d9f2e5"  # greenish
-            if val == "Down": return "background-color: #fde0e0" # reddish
+            if val == "Up": return "background-color: #d9f2e5"
+            if val == "Down": return "background-color: #fde0e0"
             return ""
         styled = sp_week.style.format(precision=2).apply(
             lambda s: [color_dir(v) if s.name == "Direction" else "" for v in s], axis=0
@@ -252,7 +244,6 @@ else:
 
 
 # TOPICS FROM LAST 7 DAYS 
-
 st.markdown('<div class="section-title">Topics from the Last 7 Days</div>', unsafe_allow_html=True)
 topics_week = topics_df[topics_df["date"] >= last_7_days].sort_values("date", ascending=False)
 
@@ -268,33 +259,44 @@ else:
     st.info("No topic modeling data available for the past 7 days.")
 
 
-# WORDCLOUDS
-
+# WORDCLOUDS (now powered by wordcloud.csv)
 st.markdown('<div class="section-title">Topic Trends WordCloud</div>', unsafe_allow_html=True)
-if {"word", "label"}.issubset(set(topic_change_df.columns)):
-    topic_change_df = topic_change_df.dropna(subset=["word", "label"])
-    text_up = " ".join(topic_change_df[topic_change_df["label"].astype(str).str.lower() == "up"]["word"].astype(str))
-    text_down = " ".join(topic_change_df[topic_change_df["label"].astype(str).str.lower() == "down"]["word"].astype(str))
+
+required_cols = {"word", "label"}
+if not wordcloud_df.empty and required_cols.issubset(set(wordcloud_df.columns)):
+    # ensure expected types and clean
+    wc = wordcloud_df.dropna(subset=["word", "label"]).copy()
+    if "count" not in wc.columns:
+        wc["count"] = 1  # fallback if counts missing
+
+    # Build frequency dicts by label
+    up_freq = (
+        wc[wc["label"].astype(str).str.lower() == "up"]
+        .groupby("word")["count"].sum().to_dict()
+    )
+    down_freq = (
+        wc[wc["label"].astype(str).str.lower() == "down"]
+        .groupby("word")["count"].sum().to_dict()
+    )
 
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Trending on Up Days")
         fig_up, ax_up = plt.subplots(figsize=(6, 4))
-        wc_up = WordCloud(background_color="white", colormap="Greens").generate(text_up if text_up else "NoData")
+        wc_up = WordCloud(background_color="white", colormap="Greens").generate_from_frequencies(up_freq or {"NoData":1})
         ax_up.imshow(wc_up, interpolation="bilinear"); ax_up.axis("off")
         st.pyplot(fig_up)
     with col2:
         st.subheader("Trending on Down Days")
         fig_down, ax_down = plt.subplots(figsize=(6, 4))
-        wc_down = WordCloud(background_color="white", colormap="Reds").generate(text_down if text_down else "NoData")
+        wc_down = WordCloud(background_color="white", colormap="Reds").generate_from_frequencies(down_freq or {"NoData":1})
         ax_down.imshow(wc_down, interpolation="bilinear"); ax_down.axis("off")
         st.pyplot(fig_down)
 else:
-    st.warning("Topic change data is missing required columns: 'word' and 'label'.")
+    st.warning("Wordcloud data is missing required columns: 'word' and 'label'.")
 
 
 # FOOTER: GITHUB LINK
-
 st.markdown(
     "<hr style='margin-top: 2rem; margin-bottom: 0.5rem;'>"
     "<div style='text-align: center;'>"
