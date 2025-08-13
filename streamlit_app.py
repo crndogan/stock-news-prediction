@@ -44,6 +44,8 @@ def load_data(version=None):
     prices = pd.read_csv(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
     tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
     topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
+
+    # NEW: prefer wordcloud.csv; fallback to topic_up_down.csv for backwards compatibility
     wc_path = f"{base}/wordcloud.csv"
     topic_change_path = f"{base}/topic_up_down.csv"
     if os.path.exists(wc_path):
@@ -53,7 +55,7 @@ def load_data(version=None):
     else:
         wordcloud_df = pd.DataFrame(columns=["word", "count", "label"])
 
-    # metrics
+    # NEW: metrics
     metrics_path = f"{base}/metrics.csv"
     metrics = pd.read_csv(metrics_path, parse_dates=["date"]) if os.path.exists(metrics_path) else pd.DataFrame()
     return tone, hist, prices, tomorrow, topics, wordcloud_df, metrics
