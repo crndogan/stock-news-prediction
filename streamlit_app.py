@@ -9,7 +9,6 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from wordcloud import WordCloud
 import os
 
-
 # PAGE / THEME
 st.set_page_config(page_title="Stock Prediction Dashboard", layout="wide")
 
@@ -40,10 +39,10 @@ st.title("News Headline Sentiment Analysis & Market Movement Prediction")
 def load_data(version=None):
     base = "notebooks"
     tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
-    hist = pd.read_csv(f"{base}/prediction_results.csv", parse_dates=["date"])
-    prices = pd.read_csv(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
-    tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
-    topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
+    hist = pd.read_csv(f("{}/prediction_results.csv").format(base), parse_dates=["date"])
+    prices = pd.read_csv(f("{}/sp500_cleaned.csv").format(base), parse_dates=["date"])
+    tomorrow = pd.read_csv(f("{}/tomorrow_prediction.csv").format(base), parse_dates=["date"])
+    topics = pd.read_csv(f("{}/topic_modeling.csv").format(base), parse_dates=["date"])
 
     # prefer wordcloud.csv; fallback to topic_up_down.csv for backwards compatibility
     wc_path = f"{base}/wordcloud.csv"
@@ -54,13 +53,21 @@ def load_data(version=None):
         wordcloud_df = pd.read_csv(topic_change_path)
     else:
         wordcloud_df = pd.DataFrame(columns=["word", "count", "label"])
-    # make wordcloud date-aware if column exists
+
+    # Normalize to day level everywhere (prevents time vs midnight mismatches)
+    for df in (tone, hist, prices, tomorrow, topics):
+        if not df.empty and "date" in df.columns:
+            df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.normalize()
+
     if "date" in wordcloud_df.columns:
-        wordcloud_df["date"] = pd.to_datetime(wordcloud_df["date"], errors="coerce")
+        wordcloud_df["date"] = pd.to_datetime(wordcloud_df["date"], errors="coerce").dt.normalize()
 
     # metrics
     metrics_path = f"{base}/metrics.csv"
     metrics = pd.read_csv(metrics_path, parse_dates=["date"]) if os.path.exists(metrics_path) else pd.DataFrame()
+    if not metrics.empty and "date" in metrics.columns:
+        metrics["date"] = pd.to_datetime(metrics["date"], errors="coerce")  # keep full timestamp for recency ordering
+
     return tone, hist, prices, tomorrow, topics, wordcloud_df, metrics
 
 def version_stamp():
@@ -72,8 +79,8 @@ def version_stamp():
         f"{base}/tomorrow_prediction.csv",
         f"{base}/topic_modeling.csv",
         f"{base}/topic_up_down.csv",
-        f"{base}/wordcloud.csv",   # NEW
-        f"{base}/metrics.csv",     # NEW
+        f"{base}/wordcloud.csv",
+        f"{base}/metrics.csv",
     ]
     return tuple(os.path.getmtime(p) for p in files if os.path.exists(p))
 
@@ -113,7 +120,7 @@ else:
     selected_date = today.date()
 
 # Use this anchor everywhere instead of "today"
-anchor_date = pd.to_datetime(selected_date)
+anchor_date = pd.to_datetime(selected_date).normalize()
 
 # NEXT TRADING DAY PREDICTION
 st.markdown('<div class="section-title">Next Trading Day Prediction</div>', unsafe_allow_html=True)
@@ -273,16 +280,15 @@ if not topics_week.empty and {"Dominant_Topic","Topic_Keywords"}.issubset(topics
 else:
     st.info("No topic modeling data in the selected 7-day window.")
 
-# WORDCLOUDS (now powered by wordcloud.csv)
+# WORDCLOUDS (date-aware)
 st.markdown('<div class="section-title">Topic Trends WordCloud</div>', unsafe_allow_html=True)
 
 required_cols = {"word", "label"}
 if not wordcloud_df.empty and required_cols.issubset(set(wordcloud_df.columns)):
     wc = wordcloud_df.dropna(subset=["word", "label"]).copy()
 
-    # If the CSV has a date column, filter by window; else show all-time
+    # If the CSV has a date column, filter to the current 7-day window; else show all-time
     if "date" in wc.columns:
-        wc["date"] = pd.to_datetime(wc["date"], errors="coerce")
         wc = wc[(wc["date"] >= last_7_days) & (wc["date"] <= anchor_date)]
 
     if "count" not in wc.columns:
@@ -306,11 +312,11 @@ if not wordcloud_df.empty and required_cols.issubset(set(wordcloud_df.columns)):
         st.pyplot(fig_down)
 
     if "date" not in wordcloud_df.columns:
-        st.caption("Wordcloud.csv has no 'date' column → showing all-time words. Add 'date' to follow the date filter.")
+        st.caption("wordcloud.csv has no 'date' column → showing all-time words. Add 'date' to follow the date filter.")
 else:
     st.warning("Wordcloud data is missing required columns: 'word' and 'label'.")
 
-# FOOTER: GITHUB LINK
+# FOOTER
 st.markdown(
     "<hr style='margin-top: 2rem; margin-bottom: 0.5rem;'>"
     "<div style='text-align: center;'>"
@@ -320,4 +326,3 @@ st.markdown(
     "</div>",
     unsafe_allow_html=True
 )
-
