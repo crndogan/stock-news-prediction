@@ -38,13 +38,22 @@ st.title("News Headline Sentiment Analysis & Market Movement Prediction")
 @st.cache_data(ttl=3600)
 def load_data(version=None):
     base = "notebooks"
-    tone = pd.read_excel(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
-    hist = pd.read_csv(f("{}/prediction_results.csv").format(base), parse_dates=["date"])
-    prices = pd.read_csv(f("{}/sp500_cleaned.csv").format(base), parse_dates=["date"])
-    tomorrow = pd.read_csv(f("{}/tomorrow_prediction.csv").format(base), parse_dates=["date"])
-    topics = pd.read_csv(f("{}/topic_modeling.csv").format(base), parse_dates=["date"])
 
-    # prefer wordcloud.csv; fallback to topic_up_down.csv for backwards compatibility
+    # helpers so app doesn't crash if a file is missing
+    def read_csv_safe(path, **kwargs):
+        return pd.read_csv(path, **kwargs) if os.path.exists(path) else pd.DataFrame()
+
+    def read_excel_safe(path, **kwargs):
+        return pd.read_excel(path, **kwargs) if os.path.exists(path) else pd.DataFrame()
+
+    # correct paths (use f-strings only)
+    tone     = read_excel_safe(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
+    hist     = read_csv_safe(f"{base}/prediction_results.csv", parse_dates=["date"])
+    prices   = read_csv_safe(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
+    tomorrow = read_csv_safe(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
+    topics   = read_csv_safe(f"{base}/topic_modeling.csv", parse_dates=["date"])
+
+    # prefer wordcloud.csv; fallback to topic_up_down.csv
     wc_path = f"{base}/wordcloud.csv"
     topic_change_path = f"{base}/topic_up_down.csv"
     if os.path.exists(wc_path):
@@ -54,19 +63,16 @@ def load_data(version=None):
     else:
         wordcloud_df = pd.DataFrame(columns=["word", "count", "label"])
 
-    # Normalize to day level everywhere (prevents time vs midnight mismatches)
-    for df in (tone, hist, prices, tomorrow, topics):
+    # normalize date columns for day-level comparisons
+    for df in (tone, hist, prices, tomorrow, topics, wordcloud_df):
         if not df.empty and "date" in df.columns:
             df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.normalize()
 
-    if "date" in wordcloud_df.columns:
-        wordcloud_df["date"] = pd.to_datetime(wordcloud_df["date"], errors="coerce").dt.normalize()
-
-    # metrics
+    # metrics (keep timestamp precision for recency ordering)
     metrics_path = f"{base}/metrics.csv"
-    metrics = pd.read_csv(metrics_path, parse_dates=["date"]) if os.path.exists(metrics_path) else pd.DataFrame()
+    metrics = read_csv_safe(metrics_path, parse_dates=["date"])
     if not metrics.empty and "date" in metrics.columns:
-        metrics["date"] = pd.to_datetime(metrics["date"], errors="coerce")  # keep full timestamp for recency ordering
+        metrics["date"] = pd.to_datetime(metrics["date"], errors="coerce")
 
     return tone, hist, prices, tomorrow, topics, wordcloud_df, metrics
 
