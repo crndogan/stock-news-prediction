@@ -45,7 +45,7 @@ def load_data(version=None):
     tomorrow = pd.read_csv(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
     topics = pd.read_csv(f"{base}/topic_modeling.csv", parse_dates=["date"])
 
-    # NEW: prefer wordcloud.csv; fallback to topic_up_down.csv for backwards compatibility
+    # prefer wordcloud.csv; fallback to topic_up_down.csv for backwards compatibility
     wc_path = f"{base}/wordcloud.csv"
     topic_change_path = f"{base}/topic_up_down.csv"
     if os.path.exists(wc_path):
@@ -54,8 +54,11 @@ def load_data(version=None):
         wordcloud_df = pd.read_csv(topic_change_path)
     else:
         wordcloud_df = pd.DataFrame(columns=["word", "count", "label"])
+    # make wordcloud date-aware if column exists
+    if "date" in wordcloud_df.columns:
+        wordcloud_df["date"] = pd.to_datetime(wordcloud_df["date"], errors="coerce")
 
-    # NEW: metrics
+    # metrics
     metrics_path = f"{base}/metrics.csv"
     metrics = pd.read_csv(metrics_path, parse_dates=["date"]) if os.path.exists(metrics_path) else pd.DataFrame()
     return tone, hist, prices, tomorrow, topics, wordcloud_df, metrics
@@ -82,12 +85,10 @@ with left:
 
 tone_df, hist_df, sp500_df, tomorrow_df, topics_df, wordcloud_df, metrics_hist = load_data(version_stamp())
 
-
 # BASIC DATES / STATUS
 dfs = [tone_df, hist_df, sp500_df, tomorrow_df, topics_df]
 today = max(df["date"].max() for df in dfs if not df.empty).normalize()
 st.sidebar.info(f"📅 Latest data date: **{today.date()}**")
-
 
 # SIDEBAR FILTERS
 st.sidebar.markdown("### 🔍 Filters")
@@ -111,13 +112,18 @@ if not hist_df.empty:
 else:
     selected_date = today.date()
 
+# Use this anchor everywhere instead of "today"
+anchor_date = pd.to_datetime(selected_date)
 
 # NEXT TRADING DAY PREDICTION
 st.markdown('<div class="section-title">Next Trading Day Prediction</div>', unsafe_allow_html=True)
-next_td = today + BDay(1)
+next_td = anchor_date + BDay(1)
 pred_row = tomorrow_df[tomorrow_df["date"] == next_td]
+
+# Fallback: nearest prediction on/after anchor_date, else latest overall
 if pred_row.empty and not tomorrow_df.empty:
-    pred_row = tomorrow_df.loc[[tomorrow_df["date"].idxmax()]]
+    cand = tomorrow_df.loc[tomorrow_df["date"] >= anchor_date]
+    pred_row = cand.iloc[[0]] if not cand.empty else tomorrow_df.loc[[tomorrow_df["date"].idxmax()]]
 
 if not pred_row.empty:
     c1, c2 = st.columns(2)
@@ -126,42 +132,50 @@ if not pred_row.empty:
     with c2:
         st.metric("Confidence", f"{pred_row['confidence'].iloc[0]:.1%}")
 else:
-    st.warning("No prediction available for the next trading day.")
-
+    st.warning("No prediction available for the selected window.")
 
 # SENTIMENT SNAPSHOT 
-st.markdown('<div class="section-title">Today’s Sentiment Snapshot</div>', unsafe_allow_html=True)
-today_sent = tone_df[tone_df["date"] == today]
-if not today_sent.empty:
+st.markdown('<div class="section-title">Selected-Day Sentiment Snapshot</div>', unsafe_allow_html=True)
+tone_up_to = tone_df[tone_df["date"] <= anchor_date]
+if not tone_up_to.empty:
+    latest_day = tone_up_to["date"].max()
+    row = tone_up_to.loc[tone_up_to["date"] == latest_day].iloc[0]
     c1, c2, c3 = st.columns(3)
-    c1.markdown(f"<div class='kpi-card'><b>Compound</b><br><span style='font-size:1.4rem;'>{today_sent['sent_compound'].iloc[0]:.3f}</span></div>", unsafe_allow_html=True)
-    c2.markdown(f"<div class='kpi-card'><b>Emotion: Positive</b><br><span style='font-size:1.4rem;'>{today_sent['emo_positive'].iloc[0]:.3f}</span></div>", unsafe_allow_html=True)
-    c3.markdown(f"<div class='kpi-card'><b>Emotion: Negative</b><br><span style='font-size:1.4rem;'>{today_sent['emo_negative'].iloc[0]:.3f}</span></div>", unsafe_allow_html=True)
+    c1.markdown(f"<div class='kpi-card'><b>Compound</b><br><span style='font-size:1.4rem;'>{row['sent_compound']:.3f}</span></div>", unsafe_allow_html=True)
+    c2.markdown(f"<div class='kpi-card'><b>Emotion: Positive</b><br><span style='font-size:1.4rem;'>{row['emo_positive']:.3f}</span></div>", unsafe_allow_html=True)
+    c3.markdown(f"<div class='kpi-card'><b>Emotion: Negative</b><br><span style='font-size:1.4rem;'>{row['emo_negative']:.3f}</span></div>", unsafe_allow_html=True)
 else:
-    st.info("No sentiment data for today.")
-
+    st.info("No sentiment data up to the selected date.")
 
 # BUILD FILTERED HISTORY 
-tone_filtered = tone_df[tone_df["sent_compound"].between(*selected_sentiment)][["date"]].drop_duplicates()
+tone_filtered = tone_df[
+    (tone_df["sent_compound"].between(*selected_sentiment)) &
+    (tone_df["date"] <= anchor_date)
+][["date"]].drop_duplicates()
 
 if selected_topic != "All" and not topics_df.empty:
-    topic_mask = topics_df["Dominant_Topic"] == selected_topic
+    topic_mask = (topics_df["Dominant_Topic"] == selected_topic) & (topics_df["date"] <= anchor_date)
     topic_dates = topics_df.loc[topic_mask, ["date"]].drop_duplicates()
     driver_dates = pd.merge(tone_filtered, topic_dates, on="date", how="inner")
 else:
     driver_dates = tone_filtered
 
-driver_dates = driver_dates[driver_dates["date"] <= pd.to_datetime(selected_date)]
-filtered_hist = pd.merge(hist_df, driver_dates, on="date", how="inner").sort_values("date")
+filtered_hist = (
+    pd.merge(
+        hist_df[hist_df["date"] <= anchor_date],
+        driver_dates,
+        on="date",
+        how="inner"
+    )
+    .sort_values("date")
+)
 
 label_map = {"Up": 1, "Down": 0, 1:1, 0:0}
 for col in ["actual_label", "predicted_label"]:
     if filtered_hist[col].dtype == "O":
         filtered_hist[col] = filtered_hist[col].str.strip()
-
 filtered_hist["actual_numeric"] = filtered_hist["actual_label"].map(label_map)
 filtered_hist["predicted_numeric"] = filtered_hist["predicted_label"].map(label_map)
-
 
 # INTERACTIVE CHART: Actual vs Predicted
 st.markdown('<div class="section-title">Actual vs Predicted Market Direction</div>', unsafe_allow_html=True)
@@ -186,20 +200,21 @@ if not filtered_hist.empty:
 else:
     st.info("No rows match the current filters (topic, sentiment, date).")
 
-
 # METRICS 
 st.markdown('<div class="section-title">Classification Metrics</div>', unsafe_allow_html=True)
 
 showed_from_csv = False
 if not metrics_hist.empty and {"accuracy","f1_score","precision","recall","date"}.issubset(metrics_hist.columns):
-    latest = metrics_hist.sort_values("date").iloc[-1]
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Accuracy",  f"{float(latest['accuracy']):.2%}")
-    k2.metric("F1 Score",  f"{float(latest['f1_score']):.2f}")
-    k3.metric("Precision", f"{float(latest['precision']):.2f}")
-    k4.metric("Recall",    f"{float(latest['recall']):.2f}")
-    st.caption(f"Last updated: {pd.to_datetime(latest['date']).strftime('%Y-%m-%d %H:%M:%S')}")
-    showed_from_csv = True
+    m_hist = metrics_hist[metrics_hist["date"] <= anchor_date]
+    if not m_hist.empty:
+        latest = m_hist.sort_values("date").iloc[-1]
+        k1, k2, k3, k4 = st.columns(4)
+        k1.metric("Accuracy",  f"{float(latest['accuracy']):.2%}")
+        k2.metric("F1 Score",  f"{float(latest['f1_score']):.2f}")
+        k3.metric("Precision", f"{float(latest['precision']):.2f}")
+        k4.metric("Recall",    f"{float(latest['recall']):.2f}")
+        st.caption(f"Last updated: {pd.to_datetime(latest['date']).strftime('%Y-%m-%d %H:%M:%S')}")
+        showed_from_csv = True
 
 if not showed_from_csv:
     metrics_df = filtered_hist.dropna(subset=["actual_numeric", "predicted_numeric"])
@@ -220,11 +235,10 @@ if not showed_from_csv:
     else:
         st.info("Not enough class variation to compute metrics, and metrics.csv not found. Loosen filters or generate metrics.csv.")
 
-
 # S&P 500 TABLE
 st.markdown('<div class="section-title">Recent S&P 500 Market Close</div>', unsafe_allow_html=True)
-last_7_days = today - timedelta(days=7)
-sp_week = sp500_df[sp500_df["date"] >= last_7_days].copy().sort_values("date", ascending=False)
+last_7_days = anchor_date - timedelta(days=7)
+sp_week = sp500_df[(sp500_df["date"] >= last_7_days) & (sp500_df["date"] <= anchor_date)].copy().sort_values("date", ascending=False)
 
 if not sp_week.empty:
     if "close_price" in sp_week.columns:
@@ -242,12 +256,11 @@ if not sp_week.empty:
     else:
         st.dataframe(sp_week, use_container_width=True, hide_index=True)
 else:
-    st.info("No S&P 500 data in the last 7 days.")
-
+    st.info("No S&P 500 data in the selected 7-day window.")
 
 # TOPICS FROM LAST 7 DAYS 
 st.markdown('<div class="section-title">Topics from the Last 7 Days</div>', unsafe_allow_html=True)
-topics_week = topics_df[topics_df["date"] >= last_7_days].sort_values("date", ascending=False)
+topics_week = topics_df[(topics_df["date"] >= last_7_days) & (topics_df["date"] <= anchor_date)].sort_values("date", ascending=False)
 
 if not topics_week.empty and {"Dominant_Topic","Topic_Keywords"}.issubset(topics_week.columns):
     for _, row in topics_week.iterrows():
@@ -258,28 +271,25 @@ if not topics_week.empty and {"Dominant_Topic","Topic_Keywords"}.issubset(topics
         </div>
         """, unsafe_allow_html=True)
 else:
-    st.info("No topic modeling data available for the past 7 days.")
-
+    st.info("No topic modeling data in the selected 7-day window.")
 
 # WORDCLOUDS (now powered by wordcloud.csv)
 st.markdown('<div class="section-title">Topic Trends WordCloud</div>', unsafe_allow_html=True)
 
 required_cols = {"word", "label"}
 if not wordcloud_df.empty and required_cols.issubset(set(wordcloud_df.columns)):
-    # ensure expected types and clean
     wc = wordcloud_df.dropna(subset=["word", "label"]).copy()
-    if "count" not in wc.columns:
-        wc["count"] = 1  # fallback if counts missing
 
-    # Build frequency dicts by label
-    up_freq = (
-        wc[wc["label"].astype(str).str.lower() == "up"]
-        .groupby("word")["count"].sum().to_dict()
-    )
-    down_freq = (
-        wc[wc["label"].astype(str).str.lower() == "down"]
-        .groupby("word")["count"].sum().to_dict()
-    )
+    # If the CSV has a date column, filter by window; else show all-time
+    if "date" in wc.columns:
+        wc["date"] = pd.to_datetime(wc["date"], errors="coerce")
+        wc = wc[(wc["date"] >= last_7_days) & (wc["date"] <= anchor_date)]
+
+    if "count" not in wc.columns:
+        wc["count"] = 1  # fallback
+
+    up_freq = wc[wc["label"].astype(str).str.lower() == "up"].groupby("word")["count"].sum().to_dict()
+    down_freq = wc[wc["label"].astype(str).str.lower() == "down"].groupby("word")["count"].sum().to_dict()
 
     col1, col2 = st.columns(2)
     with col1:
@@ -294,9 +304,11 @@ if not wordcloud_df.empty and required_cols.issubset(set(wordcloud_df.columns)):
         wc_down = WordCloud(background_color="white", colormap="Reds").generate_from_frequencies(down_freq or {"NoData":1})
         ax_down.imshow(wc_down, interpolation="bilinear"); ax_down.axis("off")
         st.pyplot(fig_down)
+
+    if "date" not in wordcloud_df.columns:
+        st.caption("Wordcloud.csv has no 'date' column → showing all-time words. Add 'date' to follow the date filter.")
 else:
     st.warning("Wordcloud data is missing required columns: 'word' and 'label'.")
-
 
 # FOOTER: GITHUB LINK
 st.markdown(
