@@ -1,6 +1,6 @@
 date,word,label,count
 2025-07-22,share,Up,76
-2025-07-22,llc,Up,58
+2025-07-22,stock,Up,55
 2025-07-22,financial,Up,37
 2025-07-22,street,Up,35
 2025-07-22,wall,Up,35
@@ -15,8 +15,8 @@ date,word,label,count
 2025-07-22,management,Up,23
 2025-07-22,july,Up,21
 2025-07-22,service,Up,21
-2025-07-22,corporation,Up,18
-2025-07-22,million,Up,14
+2025-07-22,trump,Up,19
+2025-07-22,company,Up,15
 2025-07-22,technology,Up,13
 2025-07-22,verdence,Up,13
 2025-07-22,head,Up,12
@@ -35,6 +35,7 @@ date,word,label,count
 2025-07-22,wealthfront,Up,9
 2025-07-22,acquired,Up,8
 2025-07-22,banker,Up,8
+2025-07-22,biden,Up,8
 2025-07-22,boost,Up,8
 2025-07-22,cullen,Up,8
 2025-07-22,end,Up,8
@@ -52,7 +53,6 @@ date,word,label,count
 2025-07-22,bidens,Up,6
 2025-07-22,competitor,Up,6
 2025-07-22,contributed,Up,6
-2025-07-22,corp,Up,6
 2025-07-22,crackdown,Up,6
 2025-07-22,debate,Up,6
 2025-07-22,deportation,Up,6
@@ -64,11 +64,13 @@ date,word,label,count
 2025-07-22,johnson,Up,6
 2025-07-22,judge,Up,6
 2025-07-22,larson,Up,6
+2025-07-22,market,Up,6
 2025-07-22,policy,Up,6
 2025-07-22,poor,Up,6
 2025-07-22,reality,Up,6
 2025-07-22,receives,Up,6
 2025-07-22,rep,Up,6
+2025-07-22,today,Up,6
 2025-07-22,versus,Up,6
 2025-07-22,weighs,Up,6
 2025-07-22,add,Up,5
@@ -118,6 +120,7 @@ date,word,label,count
 2025-07-22,cwm,Up,4
 2025-07-22,equity,Up,4
 2025-07-22,flight,Up,4
+2025-07-22,government,Up,4
 2025-07-22,hazlett,Up,4
 2025-07-22,high,Up,4
 2025-07-22,increase,Up,4
@@ -143,7 +146,6 @@ date,word,label,count
 2025-07-22,able,Up,3
 2025-07-22,america,Up,3
 2025-07-22,benefit,Up,3
-2025-07-22,big,Up,3
 2025-07-22,brace,Up,3
 2025-07-22,call,Up,3
 2025-07-22,cisneros,Up,3
@@ -180,6 +182,7 @@ date,word,label,count
 2025-07-22,nysejnj,Up,3
 2025-07-22,nysev,Up,3
 2025-07-22,opinion,Up,3
+2025-07-22,price,Up,3
 2025-07-22,raised,Up,3
 2025-07-22,ray,Up,3
 2025-07-22,release,Up,3
@@ -209,7 +212,6 @@ date,word,label,count
 2025-07-22,aerospace,Up,2
 2025-07-22,age,Up,2
 2025-07-22,american,Up,2
-2025-07-22,announce,Up,2
 2025-07-22,answer,Up,2
 2025-07-22,appeal,Up,2
 2025-07-22,applied,Up,2
@@ -236,6 +238,7 @@ date,word,label,count
 2025-07-22,cbs,Up,2
 2025-07-22,centerpoint,Up,2
 2025-07-22,chase,Up,2
+2025-07-22,china,Up,2
 2025-07-22,chinese,Up,2
 2025-07-22,churchill,Up,2
 2025-07-22,civil,Up,2
@@ -250,7 +253,6 @@ date,word,label,count
 2025-07-22,crh,Up,2
 2025-07-22,dare,Up,2
 2025-07-22,date,Up,2
-2025-07-22,deal,Up,2
 2025-07-22,decrease,Up,2
 2025-07-22,democracy,Up,2
 2025-07-22,democratic,Up,2
@@ -313,7 +315,6 @@ date,word,label,count
 2025-07-22,kicked,Up,2
 2025-07-22,kohberger,Up,2
 2025-07-22,kuehne,Up,2
-2025-07-22,launch,Up,2
 2025-07-22,lawyer,Up,2
 2025-07-22,leadership,Up,2
 2025-07-22,legal,Up,2
@@ -379,17 +380,16 @@ date,word,label,count
 2025-07-22,peer,Up,2
 2025-07-22,people,Up,2
 2025-07-22,peterson,Up,2
-2025-07-22,plan,Up,2
 2025-07-22,prediction,Up,2
 2025-07-22,primary,Up,2
 2025-07-22,quantum,Up,2
-2025-07-22,quarter,Up,2
 2025-07-22,quarterly,Up,2
 2025-07-22,rayonier,Up,2
 2025-07-22,real,Up,2
 2025-07-22,realty,Up,2
 2025-07-22,recommendation,Up,2
 2025-07-22,red,Up,2
+2025-07-22,report,Up,2
 2025-07-22,representaciones,Up,2
 2025-07-22,resource,Up,2
 2025-07-22,restructuring,Up,2
@@ -532,7 +532,6 @@ date,word,label,count
 2025-07-22,behind,Up,1
 2025-07-22,betting,Up,1
 2025-07-22,bias,Up,1
-2025-07-22,billion,Up,1
 2025-07-22,bio,Up,1
 2025-07-22,biogen,Up,1
 2025-07-22,biomea,Up,1
@@ -784,6 +783,7 @@ date,word,label,count
 2025-07-22,honored,Up,1
 2025-07-22,host,Up,1
 2025-07-22,hotel,Up,1
+2025-07-22,house,Up,1
 2025-07-22,howmet,Up,1
 2025-07-22,hydrofarm,Up,1
 2025-07-22,hydrograph,Up,1
@@ -1146,7 +1146,6 @@ date,word,label,count
 2025-07-22,plate,Up,1
 2025-07-22,player,Up,1
 2025-07-22,playtm,Up,1
-2025-07-22,plc,Up,1
 2025-07-22,pledge,Up,1
 2025-07-22,politics,Up,1
 2025-07-22,popular,Up,1
@@ -1165,7 +1164,6 @@ date,word,label,count
 2025-07-22,procter,Up,1
 2025-07-22,product,Up,1
 2025-07-22,program,Up,1
-2025-07-22,project,Up,1
 2025-07-22,prologis,Up,1
 2025-07-22,propaganda,Up,1
 2025-07-22,proposed,Up,1
@@ -1258,7 +1256,6 @@ date,word,label,count
 2025-07-22,skyrocketing,Up,1
 2025-07-22,sleeper,Up,1
 2025-07-22,sleeve,Up,1
-2025-07-22,small,Up,1
 2025-07-22,smallmid,Up,1
 2025-07-22,smart,Up,1
 2025-07-22,smoke,Up,1
@@ -1398,21 +1395,23 @@ date,word,label,count
 2025-07-22,zurn,Up,1
 2025-07-22,zwcad,Up,1
 2025-07-22,zwsoft,Up,1
+2025-07-23,trump,Up,44
+2025-07-23,stock,Up,32
 2025-07-23,share,Up,28
-2025-07-23,llc,Up,24
 2025-07-23,capital,Up,23
 2025-07-23,announces,Up,19
 2025-07-23,dividend,Up,19
 2025-07-23,letter,Up,19
+2025-07-23,price,Up,18
+2025-07-23,report,Up,18
+2025-07-23,company,Up,17
 2025-07-23,epstein,Up,17
 2025-07-23,america,Up,15
-2025-07-23,corporation,Up,15
 2025-07-23,management,Up,15
-2025-07-23,million,Up,15
-2025-07-23,quarter,Up,14
 2025-07-23,rate,Up,13
 2025-07-23,business,Up,12
 2025-07-23,financial,Up,12
+2025-07-23,house,Up,12
 2025-07-23,partner,Up,12
 2025-07-23,target,Up,12
 2025-07-23,administration,Up,11
@@ -1426,7 +1425,6 @@ date,word,label,count
 2025-07-23,kapitalforvaltning,Up,10
 2025-07-23,klp,Up,10
 2025-07-23,mutual,Up,10
-2025-07-23,plan,Up,10
 2025-07-23,summarybrief,Up,10
 2025-07-23,halal,Up,9
 2025-07-23,july,Up,9
@@ -1440,6 +1438,7 @@ date,word,label,count
 2025-07-23,rating,Up,7
 2025-07-23,shareholder,Up,7
 2025-07-23,sold,Up,7
+2025-07-23,today,Up,7
 2025-07-23,trade,Up,7
 2025-07-23,acquires,Up,6
 2025-07-23,across,Up,6
@@ -1450,6 +1449,7 @@ date,word,label,count
 2025-07-23,california,Up,6
 2025-07-23,canada,Up,6
 2025-07-23,chair,Up,6
+2025-07-23,china,Up,6
 2025-07-23,common,Up,6
 2025-07-23,dont,Up,6
 2025-07-23,earnings,Up,6
@@ -1457,7 +1457,6 @@ date,word,label,count
 2025-07-23,furor,Up,6
 2025-07-23,investment,Up,6
 2025-07-23,national,Up,6
-2025-07-23,project,Up,6
 2025-07-23,public,Up,6
 2025-07-23,row,Up,6
 2025-07-23,upends,Up,6
@@ -1465,8 +1464,6 @@ date,word,label,count
 2025-07-23,ahead,Up,5
 2025-07-23,angeles,Up,5
 2025-07-23,best,Up,5
-2025-07-23,big,Up,5
-2025-07-23,billion,Up,5
 2025-07-23,call,Up,5
 2025-07-23,commentary,Up,5
 2025-07-23,credit,Up,5
@@ -1474,6 +1471,7 @@ date,word,label,count
 2025-07-23,editorial,Up,5
 2025-07-23,energy,Up,5
 2025-07-23,facility,Up,5
+2025-07-23,government,Up,5
 2025-07-23,growth,Up,5
 2025-07-23,housing,Up,5
 2025-07-23,judge,Up,5
@@ -1491,7 +1489,6 @@ date,word,label,count
 2025-07-23,student,Up,5
 2025-07-23,take,Up,5
 2025-07-23,alphabet,Up,4
-2025-07-23,announce,Up,4
 2025-07-23,average,Up,4
 2025-07-23,baer,Up,4
 2025-07-23,bill,Up,4
@@ -1520,9 +1517,9 @@ date,word,label,count
 2025-07-23,jet,Up,4
 2025-07-23,jpmorgan,Up,4
 2025-07-23,julius,Up,4
-2025-07-23,launch,Up,4
 2025-07-23,loan,Up,4
 2025-07-23,man,Up,4
+2025-07-23,market,Up,4
 2025-07-23,military,Up,4
 2025-07-23,move,Up,4
 2025-07-23,musk,Up,4
@@ -1532,7 +1529,6 @@ date,word,label,count
 2025-07-23,people,Up,4
 2025-07-23,per,Up,4
 2025-07-23,place,Up,4
-2025-07-23,planned,Up,4
 2025-07-23,positive,Up,4
 2025-07-23,republican,Up,4
 2025-07-23,reserve,Up,4
@@ -1577,7 +1573,6 @@ date,word,label,count
 2025-07-23,crash,Up,3
 2025-07-23,danaher,Up,3
 2025-07-23,dead,Up,3
-2025-07-23,deal,Up,3
 2025-07-23,department,Up,3
 2025-07-23,deregulate,Up,3
 2025-07-23,design,Up,3
@@ -1610,7 +1605,6 @@ date,word,label,count
 2025-07-23,land,Up,3
 2025-07-23,landmark,Up,3
 2025-07-23,late,Up,3
-2025-07-23,latest,Up,3
 2025-07-23,living,Up,3
 2025-07-23,loss,Up,3
 2025-07-23,major,Up,3
@@ -1680,7 +1674,6 @@ date,word,label,count
 2025-07-23,admin,Up,2
 2025-07-23,afghanistan,Up,2
 2025-07-23,agent,Up,2
-2025-07-23,agreement,Up,2
 2025-07-23,aid,Up,2
 2025-07-23,air,Up,2
 2025-07-23,airline,Up,2
@@ -1738,7 +1731,6 @@ date,word,label,count
 2025-07-23,concept,Up,2
 2025-07-23,contractor,Up,2
 2025-07-23,contradict,Up,2
-2025-07-23,corp,Up,2
 2025-07-23,council,Up,2
 2025-07-23,covered,Up,2
 2025-07-23,covid,Up,2
@@ -1896,7 +1888,6 @@ date,word,label,count
 2025-07-23,phonics,Up,2
 2025-07-23,pier,Up,2
 2025-07-23,planner,Up,2
-2025-07-23,plc,Up,2
 2025-07-23,poised,Up,2
 2025-07-23,pond,Up,2
 2025-07-23,poop,Up,2
@@ -2059,7 +2050,6 @@ date,word,label,count
 2025-07-23,analysis,Up,1
 2025-07-23,anderson,Up,1
 2025-07-23,angel,Up,1
-2025-07-23,announced,Up,1
 2025-07-23,announcement,Up,1
 2025-07-23,another,Up,1
 2025-07-23,anthony,Up,1
@@ -2123,6 +2113,7 @@ date,word,label,count
 2025-07-23,bethel,Up,1
 2025-07-23,bible,Up,1
 2025-07-23,bid,Up,1
+2025-07-23,biden,Up,1
 2025-07-23,biking,Up,1
 2025-07-23,billionaire,Up,1
 2025-07-23,bitcoin,Up,1
@@ -2477,7 +2468,6 @@ date,word,label,count
 2025-07-23,gold,Up,1
 2025-07-23,goldberg,Up,1
 2025-07-23,goldman,Up,1
-2025-07-23,good,Up,1
 2025-07-23,goodbye,Up,1
 2025-07-23,governor,Up,1
 2025-07-23,grad,Up,1
@@ -2802,7 +2792,6 @@ date,word,label,count
 2025-07-23,offensive,Up,1
 2025-07-23,officially,Up,1
 2025-07-23,ofnt,Up,1
-2025-07-23,old,Up,1
 2025-07-23,oldschool,Up,1
 2025-07-23,omsesidigt,Up,1
 2025-07-23,online,Up,1
@@ -3037,7 +3026,6 @@ date,word,label,count
 2025-07-23,slash,Up,1
 2025-07-23,slaughtered,Up,1
 2025-07-23,sleek,Up,1
-2025-07-23,small,Up,1
 2025-07-23,smart,Up,1
 2025-07-23,smartphones,Up,1
 2025-07-23,smith,Up,1
@@ -3141,7 +3129,6 @@ date,word,label,count
 2025-07-23,theyve,Up,1
 2025-07-23,thiel,Up,1
 2025-07-23,thomas,Up,1
-2025-07-23,thousand,Up,1
 2025-07-23,threatening,Up,1
 2025-07-23,tie,Up,1
 2025-07-23,tjanstepension,Up,1
@@ -3236,6 +3223,7 @@ date,word,label,count
 2025-07-23,westlake,Up,1
 2025-07-23,wheel,Up,1
 2025-07-23,whipsaw,Up,1
+2025-07-23,white,Up,1
 2025-07-23,william,Up,1
 2025-07-23,williams,Up,1
 2025-07-23,wine,Up,1
@@ -3266,26 +3254,27 @@ date,word,label,count
 2025-07-23,zimv,Up,1
 2025-07-23,zohran,Up,1
 2025-07-23,zombie,Up,1
-2025-07-24,deal,Up,30
+2025-07-24,trump,Up,44
 2025-07-24,tariff,Up,29
 2025-07-24,automaker,Up,27
 2025-07-24,disadvantage,Up,27
 2025-07-24,japan,Up,27
 2025-07-24,put,Up,27
 2025-07-24,share,Up,21
-2025-07-24,llc,Up,19
 2025-07-24,financial,Up,18
 2025-07-24,epstein,Up,15
 2025-07-24,life,Up,14
+2025-07-24,house,Up,13
 2025-07-24,johnson,Up,13
-2025-07-24,corp,Up,12
 2025-07-24,file,Up,12
 2025-07-24,management,Up,11
+2025-07-24,price,Up,11
 2025-07-24,ethical,Up,10
 2025-07-24,feedback,Up,10
 2025-07-24,give,Up,10
 2025-07-24,people,Up,10
 2025-07-24,podcast,Up,10
+2025-07-24,stock,Up,10
 2025-07-24,action,Up,9
 2025-07-24,close,Up,9
 2025-07-24,split,Up,8
@@ -3297,11 +3286,12 @@ date,word,label,count
 2025-07-24,appropriate,Up,6
 2025-07-24,arent,Up,6
 2025-07-24,asset,Up,6
-2025-07-24,corporation,Up,6
+2025-07-24,company,Up,6
 2025-07-24,earnings,Up,6
 2025-07-24,holding,Up,6
 2025-07-24,jump,Up,6
 2025-07-24,released,Up,6
+2025-07-24,report,Up,6
 2025-07-24,speaker,Up,6
 2025-07-24,vow,Up,6
 2025-07-24,budgeting,Up,5
@@ -3329,14 +3319,11 @@ date,word,label,count
 2025-07-24,international,Up,4
 2025-07-24,journal,Up,4
 2025-07-24,kohberger,Up,4
-2025-07-24,launch,Up,4
 2025-07-24,machine,Up,4
 2025-07-24,maker,Up,4
-2025-07-24,million,Up,4
 2025-07-24,north,Up,4
 2025-07-24,nysearcavoo,Up,4
 2025-07-24,nyseibm,Up,4
-2025-07-24,plan,Up,4
 2025-07-24,remains,Up,4
 2025-07-24,sold,Up,4
 2025-07-24,street,Up,4
@@ -3355,8 +3342,8 @@ date,word,label,count
 2025-07-24,higher,Up,3
 2025-07-24,hit,Up,3
 2025-07-24,judge,Up,3
-2025-07-24,llp,Up,3
 2025-07-24,loss,Up,3
+2025-07-24,market,Up,3
 2025-07-24,national,Up,3
 2025-07-24,nysehd,Up,3
 2025-07-24,nysejnj,Up,3
@@ -3383,7 +3370,6 @@ date,word,label,count
 2025-07-24,awarded,Up,2
 2025-07-24,banc,Up,2
 2025-07-24,bias,Up,2
-2025-07-24,big,Up,2
 2025-07-24,blowout,Up,2
 2025-07-24,boyd,Up,2
 2025-07-24,brazil,Up,2
@@ -3449,7 +3435,6 @@ date,word,label,count
 2025-07-24,nysecat,Up,2
 2025-07-24,nyselly,Up,2
 2025-07-24,nysepg,Up,2
-2025-07-24,old,Up,2
 2025-07-24,ombudsman,Up,2
 2025-07-24,oversight,Up,2
 2025-07-24,owen,Up,2
@@ -3518,7 +3503,6 @@ date,word,label,count
 2025-07-24,auction,Up,1
 2025-07-24,august,Up,1
 2025-07-24,authority,Up,1
-2025-07-24,bad,Up,1
 2025-07-24,bag,Up,1
 2025-07-24,ballston,Up,1
 2025-07-24,ban,Up,1
@@ -3562,6 +3546,7 @@ date,word,label,count
 2025-07-24,charger,Up,1
 2025-07-24,chicago,Up,1
 2025-07-24,childrenpart,Up,1
+2025-07-24,china,Up,1
 2025-07-24,cifr,Up,1
 2025-07-24,cipher,Up,1
 2025-07-24,claim,Up,1
@@ -3665,6 +3650,7 @@ date,word,label,count
 2025-07-24,gold,Up,1
 2025-07-24,gop,Up,1
 2025-07-24,gov,Up,1
+2025-07-24,government,Up,1
 2025-07-24,governor,Up,1
 2025-07-24,grant,Up,1
 2025-07-24,ground,Up,1
@@ -3879,7 +3865,6 @@ date,word,label,count
 2025-07-24,shapiro,Up,1
 2025-07-24,skittish,Up,1
 2025-07-24,skyrocket,Up,1
-2025-07-24,small,Up,1
 2025-07-24,smallcap,Up,1
 2025-07-24,soft,Up,1
 2025-07-24,south,Up,1
@@ -3949,16 +3934,16 @@ date,word,label,count
 2025-07-24,wednesday,Up,1
 2025-07-24,weigh,Up,1
 2025-07-24,whats,Up,1
+2025-07-24,white,Up,1
 2025-07-24,wholesale,Up,1
 2025-07-24,withholding,Up,1
 2025-07-24,word,Up,1
 2025-07-24,yielding,Up,1
-2025-07-25,llc,Up,90
 2025-07-25,share,Up,79
+2025-07-25,stock,Up,52
 2025-07-25,management,Up,46
 2025-07-25,american,Up,37
 2025-07-25,poll,Up,34
-2025-07-25,corporation,Up,32
 2025-07-25,holding,Up,32
 2025-07-25,financial,Up,30
 2025-07-25,capital,Up,28
@@ -3970,7 +3955,7 @@ date,word,label,count
 2025-07-25,ruling,Up,27
 2025-07-25,supreme,Up,27
 2025-07-25,etf,Up,26
-2025-07-25,million,Up,26
+2025-07-25,trump,Up,26
 2025-07-25,sell,Up,23
 2025-07-25,venturi,Up,23
 2025-07-25,proficio,Up,22
@@ -3978,12 +3963,12 @@ date,word,label,count
 2025-07-25,asset,Up,20
 2025-07-25,federal,Up,19
 2025-07-25,cut,Up,18
-2025-07-25,corp,Up,17
 2025-07-25,readystate,Up,17
 2025-07-25,choreo,Up,16
 2025-07-25,purchase,Up,15
 2025-07-25,sym,Up,15
 2025-07-25,advisor,Up,14
+2025-07-25,company,Up,14
 2025-07-25,cooperating,Up,14
 2025-07-25,fed,Up,14
 2025-07-25,investigation,Up,14
@@ -4006,6 +3991,7 @@ date,word,label,count
 2025-07-25,hamas,Up,10
 2025-07-25,investment,Up,10
 2025-07-25,ishares,Up,10
+2025-07-25,price,Up,10
 2025-07-25,short,Up,10
 2025-07-25,acquires,Up,9
 2025-07-25,oak,Up,9
@@ -4023,7 +4009,6 @@ date,word,label,count
 2025-07-25,faith,Up,7
 2025-07-25,file,Up,7
 2025-07-25,find,Up,7
-2025-07-25,good,Up,7
 2025-07-25,havent,Up,7
 2025-07-25,international,Up,7
 2025-07-25,july,Up,7
@@ -4066,7 +4051,6 @@ date,word,label,count
 2025-07-25,hulk,Up,4
 2025-07-25,insider,Up,4
 2025-07-25,johnson,Up,4
-2025-07-25,latest,Up,4
 2025-07-25,lilly,Up,4
 2025-07-25,list,Up,4
 2025-07-25,lower,Up,4
@@ -4162,7 +4146,6 @@ date,word,label,count
 2025-07-25,address,Up,2
 2025-07-25,advance,Up,2
 2025-07-25,amid,Up,2
-2025-07-25,announce,Up,2
 2025-07-25,armstrong,Up,2
 2025-07-25,ban,Up,2
 2025-07-25,bancorp,Up,2
@@ -4229,6 +4212,7 @@ date,word,label,count
 2025-07-25,gov,Up,2
 2025-07-25,gray,Up,2
 2025-07-25,halliburton,Up,2
+2025-07-25,house,Up,2
 2025-07-25,hurricaneready,Up,2
 2025-07-25,illumina,Up,2
 2025-07-25,increased,Up,2
@@ -4239,7 +4223,6 @@ date,word,label,count
 2025-07-25,james,Up,2
 2025-07-25,justice,Up,2
 2025-07-25,kansa,Up,2
-2025-07-25,launch,Up,2
 2025-07-25,lawyer,Up,2
 2025-07-25,legato,Up,2
 2025-07-25,lharris,Up,2
@@ -4249,6 +4232,7 @@ date,word,label,count
 2025-07-25,loan,Up,2
 2025-07-25,madison,Up,2
 2025-07-25,manufacturing,Up,2
+2025-07-25,market,Up,2
 2025-07-25,mass,Up,2
 2025-07-25,medpace,Up,2
 2025-07-25,meeting,Up,2
@@ -4306,7 +4290,6 @@ date,word,label,count
 2025-07-25,perfectly,Up,2
 2025-07-25,petroleum,Up,2
 2025-07-25,philip,Up,2
-2025-07-25,plan,Up,2
 2025-07-25,postal,Up,2
 2025-07-25,powell,Up,2
 2025-07-25,presence,Up,2
@@ -4341,7 +4324,6 @@ date,word,label,count
 2025-07-25,tech,Up,2
 2025-07-25,tetra,Up,2
 2025-07-25,texas,Up,2
-2025-07-25,third,Up,2
 2025-07-25,tip,Up,2
 2025-07-25,tony,Up,2
 2025-07-25,tool,Up,2
@@ -4414,7 +4396,6 @@ date,word,label,count
 2025-07-25,babine,Up,1
 2025-07-25,background,Up,1
 2025-07-25,backlash,Up,1
-2025-07-25,bad,Up,1
 2025-07-25,bancshares,Up,1
 2025-07-25,bar,Up,1
 2025-07-25,batsbbjp,Up,1
@@ -4430,7 +4411,6 @@ date,word,label,count
 2025-07-25,bellring,Up,1
 2025-07-25,benningfield,Up,1
 2025-07-25,betabuilders,Up,1
-2025-07-25,big,Up,1
 2025-07-25,biggest,Up,1
 2025-07-25,bike,Up,1
 2025-07-25,birchcreek,Up,1
@@ -4476,6 +4456,7 @@ date,word,label,count
 2025-07-25,chicharito,Up,1
 2025-07-25,chief,Up,1
 2025-07-25,childhood,Up,1
+2025-07-25,china,Up,1
 2025-07-25,chip,Up,1
 2025-07-25,chocolate,Up,1
 2025-07-25,cia,Up,1
@@ -4882,7 +4863,6 @@ date,word,label,count
 2025-07-25,occidental,Up,1
 2025-07-25,oct,Up,1
 2025-07-25,officer,Up,1
-2025-07-25,old,Up,1
 2025-07-25,olympic,Up,1
 2025-07-25,onalaska,Up,1
 2025-07-25,oneway,Up,1
@@ -4928,7 +4908,6 @@ date,word,label,count
 2025-07-25,platt,Up,1
 2025-07-25,player,Up,1
 2025-07-25,plb,Up,1
-2025-07-25,plc,Up,1
 2025-07-25,pnc,Up,1
 2025-07-25,politico,Up,1
 2025-07-25,poor,Up,1
@@ -4945,7 +4924,6 @@ date,word,label,count
 2025-07-25,probe,Up,1
 2025-07-25,productive,Up,1
 2025-07-25,progress,Up,1
-2025-07-25,project,Up,1
 2025-07-25,prologis,Up,1
 2025-07-25,promising,Up,1
 2025-07-25,prompt,Up,1
@@ -5067,6 +5045,7 @@ date,word,label,count
 2025-07-25,tfx,Up,1
 2025-07-25,theory,Up,1
 2025-07-25,tissue,Up,1
+2025-07-25,today,Up,1
 2025-07-25,transform,Up,1
 2025-07-25,trapped,Up,1
 2025-07-25,traveler,Up,1
@@ -5116,11 +5095,11 @@ date,word,label,count
 2025-07-25,worth,Up,1
 2025-07-25,wrestling,Up,1
 2025-07-25,yollari,Up,1
-2025-07-28,llc,Down,87
 2025-07-28,share,Down,82
 2025-07-28,gaza,Down,68
 2025-07-28,death,Down,66
 2025-07-28,starved,Down,66
+2025-07-28,trump,Down,60
 2025-07-28,epstein,Down,49
 2025-07-28,investment,Down,48
 2025-07-28,controversy,Down,47
@@ -5142,6 +5121,7 @@ date,word,label,count
 2025-07-28,advisor,Down,34
 2025-07-28,etf,Down,34
 2025-07-28,wealth,Down,33
+2025-07-28,stock,Down,32
 2025-07-28,american,Down,31
 2025-07-28,counsel,Down,28
 2025-07-28,coke,Down,24
@@ -5157,14 +5137,13 @@ date,word,label,count
 2025-07-28,surge,Down,20
 2025-07-28,service,Down,19
 2025-07-28,holding,Down,18
-2025-07-28,corporation,Down,16
+2025-07-28,company,Down,17
 2025-07-28,part,Down,16
 2025-07-28,ishares,Down,15
 2025-07-28,trade,Down,15
 2025-07-28,sold,Down,14
 2025-07-28,acquires,Down,13
 2025-07-28,buy,Down,13
-2025-07-28,deal,Down,13
 2025-07-28,regulation,Down,13
 2025-07-28,sell,Down,13
 2025-07-28,analyst,Down,12
@@ -5178,7 +5157,6 @@ date,word,label,count
 2025-07-28,strict,Down,12
 2025-07-28,tax,Down,12
 2025-07-28,financial,Down,11
-2025-07-28,million,Down,11
 2025-07-28,purchase,Down,11
 2025-07-28,strategic,Down,11
 2025-07-28,acquired,Down,9
@@ -5189,7 +5167,6 @@ date,word,label,count
 2025-07-28,potty,Down,9
 2025-07-28,woman,Down,9
 2025-07-28,associate,Down,8
-2025-07-28,billion,Down,8
 2025-07-28,vanguard,Down,8
 2025-07-28,capital,Down,7
 2025-07-28,international,Down,7
@@ -5241,11 +5218,11 @@ date,word,label,count
 2025-07-28,customer,Down,4
 2025-07-28,everything,Down,4
 2025-07-28,grows,Down,4
+2025-07-28,house,Down,4
 2025-07-28,increase,Down,4
 2025-07-28,intellus,Down,4
 2025-07-28,johnson,Down,4
 2025-07-28,morgan,Down,4
-2025-07-28,plc,Down,4
 2025-07-28,president,Down,4
 2025-07-28,purchased,Down,4
 2025-07-28,relocating,Down,4
@@ -5269,6 +5246,7 @@ date,word,label,count
 2025-07-28,nyseabbv,Down,3
 2025-07-28,order,Down,3
 2025-07-28,partner,Down,3
+2025-07-28,price,Down,3
 2025-07-28,sign,Down,3
 2025-07-28,smallcap,Down,3
 2025-07-28,treasury,Down,3
@@ -5352,6 +5330,7 @@ date,word,label,count
 2025-07-28,look,Down,2
 2025-07-28,machina,Down,2
 2025-07-28,manufacturing,Down,2
+2025-07-28,market,Down,2
 2025-07-28,mass,Down,2
 2025-07-28,measure,Down,2
 2025-07-28,met,Down,2
@@ -5396,9 +5375,7 @@ date,word,label,count
 2025-07-28,player,Down,2
 2025-07-28,powell,Down,2
 2025-07-28,power,Down,2
-2025-07-28,project,Down,2
 2025-07-28,quality,Down,2
-2025-07-28,quarter,Down,2
 2025-07-28,rebate,Down,2
 2025-07-28,risk,Down,2
 2025-07-28,schwab,Down,2
@@ -5437,7 +5414,6 @@ date,word,label,count
 2025-07-28,advice,Down,1
 2025-07-28,aerospace,Down,1
 2025-07-28,africa,Down,1
-2025-07-28,agreement,Down,1
 2025-07-28,ahead,Down,1
 2025-07-28,aidriven,Down,1
 2025-07-28,air,Down,1
@@ -5644,7 +5620,6 @@ date,word,label,count
 2025-07-28,global,Down,1
 2025-07-28,globalt,Down,1
 2025-07-28,gmail,Down,1
-2025-07-28,good,Down,1
 2025-07-28,gordon,Down,1
 2025-07-28,gpt,Down,1
 2025-07-28,grill,Down,1
@@ -5703,8 +5678,6 @@ date,word,label,count
 2025-07-28,lament,Down,1
 2025-07-28,largecap,Down,1
 2025-07-28,late,Down,1
-2025-07-28,latest,Down,1
-2025-07-28,launch,Down,1
 2025-07-28,layoff,Down,1
 2025-07-28,life,Down,1
 2025-07-28,lifethreatening,Down,1
@@ -5879,7 +5852,6 @@ date,word,label,count
 2025-07-28,pharaoh,Down,1
 2025-07-28,pinnacle,Down,1
 2025-07-28,place,Down,1
-2025-07-28,plan,Down,1
 2025-07-28,planner,Down,1
 2025-07-28,plotted,Down,1
 2025-07-28,police,Down,1
@@ -5914,6 +5886,7 @@ date,word,label,count
 2025-07-28,released,Down,1
 2025-07-28,remy,Down,1
 2025-07-28,renasant,Down,1
+2025-07-28,report,Down,1
 2025-07-28,represent,Down,1
 2025-07-28,resigned,Down,1
 2025-07-28,resort,Down,1

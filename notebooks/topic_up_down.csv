@@ -1,13 +1,13 @@
 word,count,label
 promising,5,Up
 biotech,3,Up
+stock,149,Up
 consider,4,Up
 july,37,Up
 best,16,Up
 travel,2,Up
 worth,7,Up
 watching,3,Up
-small,3,Up
 cap,2,Up
 follow,10,Up
 bailard,10,Up
@@ -17,6 +17,7 @@ axon,2,Up
 enterprise,4,Up
 nasdaqaxon,2,Up
 airline,8,Up
+trump,133,Up
 tax,4,Up
 law,12,Up
 reshape,1,Up
@@ -41,6 +42,7 @@ successful,1,Up
 pack,2,Up
 come,6,Up
 oneonones,1,Up
+today,14,Up
 quordle,1,Up
 hint,2,Up
 answer,10,Up
@@ -68,14 +70,11 @@ built,3,Up
 speed,3,Up
 pick,3,Up
 autohome,1,Up
-announce,8,Up
-quarter,16,Up
 interim,1,Up
 massachusetts,13,Up
 service,34,Up
 sell,58,Up
 quidelortho,2,Up
-corporation,71,Up
 nasdaqqdel,2,Up
 sbi,4,Up
 security,18,Up
@@ -84,14 +83,12 @@ fabrinet,1,Up
 nysefn,1,Up
 apollon,4,Up
 management,95,Up
-llc,191,Up
 acquires,26,Up
 franklin,3,Up
 bsp,1,Up
 realty,3,Up
 trust,8,Up
 nysefbrt,1,Up
-million,59,Up
 royal,2,Up
 gold,7,Up
 nasdaqrgld,1,Up
@@ -122,7 +119,6 @@ stranger,2,Up
 theyve,3,Up
 married,2,Up
 zwsoft,1,Up
-launch,12,Up
 zwcad,1,Up
 flex,1,Up
 canada,8,Up
@@ -136,6 +132,7 @@ cwm,4,Up
 grows,14,Up
 lamar,1,Up
 advertising,1,Up
+company,52,Up
 nasdaqlamr,1,Up
 chinese,2,Up
 add,10,Up
@@ -154,6 +151,7 @@ microsoft,4,Up
 software,6,Up
 vulnerability,1,Up
 reportedly,1,Up
+government,10,Up
 businesseswhat,1,Up
 take,18,Up
 millrose,1,Up
@@ -227,7 +225,6 @@ upgraded,15,Up
 kiniksa,1,Up
 pharmaceutical,5,Up
 international,20,Up
-plc,4,Up
 nasdaqknsa,1,Up
 annuity,1,Up
 life,17,Up
@@ -238,7 +235,6 @@ living,8,Up
 nysebkd,2,Up
 downgraded,7,Up
 westlake,2,Up
-corp,37,Up
 nysewlk,1,Up
 consensus,7,Up
 moderate,6,Up
@@ -310,6 +306,7 @@ tariff,44,Up
 threat,1,Up
 green,6,Up
 nyseslg,1,Up
+price,42,Up
 raised,8,Up
 karen,1,Up
 kwan,1,Up
@@ -351,6 +348,7 @@ hormel,2,Up
 food,11,Up
 nysehrl,2,Up
 versus,6,Up
+china,10,Up
 marine,4,Up
 otcmktscmfo,2,Up
 head,19,Up
@@ -374,7 +372,6 @@ nasdaqilmn,3,Up
 visa,4,Up
 nysev,4,Up
 altman,1,Up
-plan,18,Up
 push,4,Up
 democratize,1,Up
 economic,2,Up
@@ -399,6 +396,7 @@ drowning,2,Up
 vladimir,2,Up
 tenev,1,Up
 robinhood,1,Up
+market,15,Up
 nasdaqhood,1,Up
 insider,7,Up
 selling,4,Up
@@ -756,6 +754,7 @@ precinct,1,Up
 reject,1,Up
 cornerstone,1,Up
 quarterly,14,Up
+report,26,Up
 june,2,Up
 deutsche,1,Up
 bank,27,Up
@@ -838,8 +837,6 @@ fsa,1,Up
 reimbursement,1,Up
 biogen,3,Up
 bet,2,Up
-big,11,Up
-billion,6,Up
 expansion,1,Up
 manufacturing,4,Up
 retail,3,Up
@@ -963,7 +960,6 @@ usw,2,Up
 call,12,Up
 real,4,Up
 fair,3,Up
-deal,35,Up
 southwest,2,Up
 date,2,Up
 assigned,2,Up
@@ -984,7 +980,6 @@ nysearcaivv,3,Up
 integrity,2,Up
 unit,1,Up
 apartment,2,Up
-project,8,Up
 proposed,3,Up
 virginia,3,Up
 ave,2,Up
@@ -1160,6 +1155,7 @@ brace,3,Up
 disaster,3,Up
 opinion,5,Up
 hunter,10,Up
+biden,9,Up
 george,1,Up
 clooney,1,Up
 everybody,1,Up
@@ -1366,6 +1362,7 @@ nysecat,5,Up
 lockheed,4,Up
 martin,5,Up
 nyselmt,2,Up
+house,28,Up
 majority,1,Up
 shrink,1,Up
 dhs,2,Up
@@ -1501,7 +1498,6 @@ electricity,1,Up
 export,3,Up
 chevron,1,Up
 cvx,1,Up
-good,8,Up
 longterm,1,Up
 portfolio,4,Up
 advising,1,Up
@@ -1645,7 +1641,6 @@ investingcom,1,Up
 partially,3,Up
 enforcing,2,Up
 ban,6,Up
-planned,4,Up
 parenthood,4,Up
 faraday,1,Up
 habittrade,1,Up
@@ -1775,6 +1770,7 @@ force,4,Up
 saying,2,Up
 goodbye,1,Up
 warthog,1,Up
+white,2,Up
 russia,6,Up
 facing,1,Up
 fifthgeneration,1,Up
@@ -1880,7 +1876,6 @@ speaker,7,Up
 releasing,1,Up
 recess,2,Up
 preliminary,2,Up
-announced,1,Up
 tuesday,4,Up
 probe,2,Up
 river,1,Up
@@ -2155,7 +2150,6 @@ building,5,Up
 warns,4,Up
 wildly,2,Up
 misleading,2,Up
-latest,7,Up
 allegation,2,Up
 died,2,Up
 trip,2,Up
@@ -2257,7 +2251,6 @@ realtorcom,2,Up
 titan,3,Up
 close,13,Up
 usm,2,Up
-agreement,2,Up
 exim,2,Up
 camtek,1,Up
 progress,3,Up
@@ -2434,7 +2427,6 @@ extended,1,Up
 cop,1,Up
 quietly,1,Up
 tag,1,Up
-thousand,1,Up
 gang,1,Up
 feed,2,Up
 atlantic,1,Up
@@ -2500,7 +2492,6 @@ skill,2,Up
 step,7,Up
 epic,1,Up
 replacing,1,Up
-old,4,Up
 glory,1,Up
 crescent,1,Up
 moon,1,Up
@@ -2887,7 +2878,6 @@ summit,3,Up
 nasdaqtsla,4,Up
 wedbush,2,Up
 egerton,2,Up
-llp,3,Up
 skittish,1,Up
 early,1,Up
 deregulation,1,Up
@@ -3109,7 +3099,6 @@ diegos,1,Up
 resignation,1,Up
 demotion,1,Up
 putting,1,Up
-bad,2,Up
 nebraska,1,Up
 pete,1,Up
 ricketts,1,Up
@@ -3680,7 +3669,6 @@ racist,1,Up
 tony,2,Up
 evers,2,Up
 wont,2,Up
-third,2,Up
 trouble,1,Up
 triggering,1,Up
 schism,1,Up
@@ -3784,7 +3772,6 @@ neon,1,Down
 bloom,1,Down
 announces,4,Down
 successful,1,Down
-launch,1,Down
 aidriven,1,Down
 backend,1,Down
 software,1,Down
@@ -3799,7 +3786,6 @@ regulation,13,Down
 education,6,Down
 department,6,Down
 release,7,Down
-billion,8,Down
 remaining,6,Down
 withheld,6,Down
 grant,6,Down
@@ -3816,7 +3802,6 @@ ribboncutting,1,Down
 tempus,6,Down
 wealth,33,Down
 planning,6,Down
-llc,87,Down
 alphabet,6,Down
 nasdaqgoog,6,Down
 neo,1,Down
@@ -3824,6 +3809,7 @@ ivy,1,Down
 capital,7,Down
 management,12,Down
 cut,44,Down
+stock,32,Down
 holding,18,Down
 johnson,4,Down
 nysejnj,2,Down
@@ -3836,6 +3822,7 @@ adding,1,Down
 store,1,Down
 pennsylvania,1,Down
 cocoa,1,Down
+price,3,Down
 sharply,1,Down
 higher,2,Down
 belownormal,1,Down
@@ -3849,6 +3836,7 @@ palantir,1,Down
 join,1,Down
 list,1,Down
 valuable,1,Down
+company,17,Down
 doubling,1,Down
 coffee,2,Down
 slump,1,Down
@@ -3867,7 +3855,6 @@ investor,2,Down
 charlotte,2,Down
 eagle,2,Down
 lake,3,Down
-project,2,Down
 obtain,2,Down
 conditional,2,Down
 green,2,Down
@@ -3902,9 +3889,9 @@ pendleton,1,Down
 zip,1,Down
 code,1,Down
 pas,1,Down
+house,4,Down
 planner,1,Down
 approve,1,Down
-latest,1,Down
 section,1,Down
 tracy,1,Down
 hill,1,Down
@@ -3924,6 +3911,7 @@ yacht,1,Down
 continues,1,Down
 sail,1,Down
 smoothly,1,Down
+trump,60,Down
 trade,15,Down
 tariff,4,Down
 partner,3,Down
@@ -3973,6 +3961,7 @@ major,1,Down
 cable,1,Down
 channel,2,Down
 purchase,11,Down
+report,1,Down
 float,1,Down
 rebate,2,Down
 american,31,Down
@@ -4024,7 +4013,6 @@ skydance,1,Down
 medium,1,Down
 discovery,2,Down
 detail,2,Down
-quarter,2,Down
 conference,2,Down
 call,3,Down
 webcast,2,Down
@@ -4033,7 +4021,6 @@ war,1,Down
 powell,2,Down
 battering,1,Down
 ram,1,Down
-million,11,Down
 follower,1,Down
 mcdonalds,1,Down
 test,1,Down
@@ -4068,7 +4055,6 @@ sending,1,Down
 indecent,1,Down
 material,1,Down
 cbnnws,1,Down
-plan,1,Down
 carbondale,1,Down
 cheapening,1,Down
 genocide,1,Down
@@ -4170,7 +4156,6 @@ woodsonia,1,Down
 ready,1,Down
 proceed,1,Down
 island,1,Down
-good,1,Down
 life,1,Down
 application,1,Down
 illinois,3,Down
@@ -4219,7 +4204,6 @@ mill,1,Down
 nysegis,1,Down
 charles,2,Down
 schwab,2,Down
-corporation,16,Down
 nyseschw,1,Down
 burney,1,Down
 zoetis,1,Down
@@ -4235,6 +4219,7 @@ dimensional,2,Down
 emerging,1,Down
 core,2,Down
 equity,1,Down
+market,2,Down
 nysearcadfae,1,Down
 acquired,9,Down
 avantax,6,Down
@@ -4310,7 +4295,6 @@ nysecci,2,Down
 discretionary,1,Down
 nysearcavcr,1,Down
 usjapan,1,Down
-deal,13,Down
 give,1,Down
 control,2,Down
 vapor,1,Down
@@ -4333,7 +4317,6 @@ nysecmg,1,Down
 stanley,2,Down
 nysems,2,Down
 gsk,1,Down
-plc,4,Down
 sponsored,1,Down
 adr,2,Down
 nysegsk,1,Down
@@ -4630,7 +4613,6 @@ nyseitw,1,Down
 regency,1,Down
 center,1,Down
 nasdaqreg,1,Down
-agreement,1,Down
 set,1,Down
 eartha,1,Down
 assessment,1,Down
