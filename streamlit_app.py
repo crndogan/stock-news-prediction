@@ -35,46 +35,74 @@ st.markdown(f"""
 st.title("News Headline Sentiment Analysis & Market Movement Prediction")
 
 # DATA LOADING 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=900) 
 def load_data(version=None):
-    base = "notebooks"
+    import io, requests 
+    RAW_BASE = "https://raw.githubusercontent.com/crndogan/stock-news-prediction/main/notebooks"
+    LOCAL_BASE = "notebooks"
+    def fetch_bytes(url, timeout=20):
+        r = requests.get(url, headers={"User-Agent": "streamlit-app"}, timeout=timeout)
+        r.raise_for_status()
+        return r.content
 
-    # helpers so app doesn't crash if a file is missing
-    def read_csv_safe(path, **kwargs):
-        return pd.read_csv(path, **kwargs) if os.path.exists(path) else pd.DataFrame()
+    def read_csv_remote(name):
+        url = f"{RAW_BASE}/{name}"
+        try:
+            data = fetch_bytes(url)
+            return pd.read_csv(io.BytesIO(data), parse_dates=["date"])
+        except Exception:
+            # fallback to local if remote fails
+            local_path = os.path.join(LOCAL_BASE, name)
+            return pd.read_csv(local_path, parse_dates=["date"]) if os.path.exists(local_path) else pd.DataFrame()
 
-    def read_excel_safe(path, **kwargs):
-        return pd.read_excel(path, **kwargs) if os.path.exists(path) else pd.DataFrame()
+    def read_excel_remote(name):
+        url = f"{RAW_BASE}/{name}"
+        try:
+            data = fetch_bytes(url)
+            return pd.read_excel(io.BytesIO(data), parse_dates=["date"], engine="openpyxl")
+        except Exception:
+            local_path = os.path.join(LOCAL_BASE, name)
+            return pd.read_excel(local_path, parse_dates=["date"], engine="openpyxl") if os.path.exists(local_path) else pd.DataFrame()
 
-    # correct paths (use f-strings only)
-    tone     = read_excel_safe(f"{base}/stock_news_tone.xlsx", parse_dates=["date"])
-    hist     = read_csv_safe(f"{base}/prediction_results.csv", parse_dates=["date"])
-    prices   = read_csv_safe(f"{base}/sp500_cleaned.csv", parse_dates=["date"])
-    tomorrow = read_csv_safe(f"{base}/tomorrow_prediction.csv", parse_dates=["date"])
-    topics   = read_csv_safe(f"{base}/topic_modeling.csv", parse_dates=["date"])
+    # ---- Load core files 
+    tone     = read_excel_remote("stock_news_tone.xlsx")
+    hist     = read_csv_remote("prediction_results.csv")
+    prices   = read_csv_remote("sp500_cleaned.csv")
+    tomorrow = read_csv_remote("tomorrow_prediction.csv")
+    topics   = read_csv_remote("topic_modeling.csv")  # (csv in your repo)
 
-    # prefer wordcloud.csv; fallback to topic_up_down.csv
-    wc_path = f"{base}/wordcloud.csv"
-    topic_change_path = f"{base}/topic_up_down.csv"
-    if os.path.exists(wc_path):
-        wordcloud_df = pd.read_csv(wc_path)
-    elif os.path.exists(topic_change_path):
-        wordcloud_df = pd.read_csv(topic_change_path)
-    else:
-        wordcloud_df = pd.DataFrame(columns=["word", "count", "label"])
+    # ---- Wordcloud
+    wordcloud_df = read_csv_remote("wordcloud.csv")
+    if wordcloud_df.empty:  # fallback
+        wordcloud_df = read_csv_remote("topic_up_down.csv")
 
-    # normalize date columns for day-level comparisons
-    for df in (tone, hist, prices, tomorrow, topics, wordcloud_df):
+    # Ensure required columns exist even if file was missing
+    if wordcloud_df.empty:
+        wordcloud_df = pd.DataFrame(columns=["date", "word", "label", "count"])
+
+    # ---- Metrics 
+    metrics = read_csv_remote("metrics.csv")  # optional, may be empty
+
+    # ---- Normalize/clean 
+    for df in (tone, hist, prices, tomorrow, topics, wordcloud_df, metrics):
         if not df.empty and "date" in df.columns:
-            df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.normalize()
+            df["date"] = pd.to_datetime(df["date"], errors="coerce")
+            # daily alignment for joins/windowing (keep full ts in metrics too)
+            if df is not metrics:
+                df["date"] = df["date"].dt.normalize()
 
-    # metrics (keep timestamp precision for recency ordering)
-    metrics_path = f"{base}/metrics.csv"
-    metrics = read_csv_safe(metrics_path, parse_dates=["date"])
-    if not metrics.empty and "date" in metrics.columns:
-        metrics["date"] = pd.to_datetime(metrics["date"], errors="coerce")
+    if "Dominant_Topic" in topics.columns:
+        topics["Dominant_Topic"] = topics["Dominant_Topic"].astype(str).str.strip()
+
+    # Standardize wordcloud columns if needed
+    for col in ["word", "label"]:
+        if col not in wordcloud_df.columns:
+            wordcloud_df[col] = pd.Series(dtype="object")
+    if "count" not in wordcloud_df.columns:
+        wordcloud_df["count"] = 1
 
     return tone, hist, prices, tomorrow, topics, wordcloud_df, metrics
+
 
 def version_stamp():
     base = "notebooks"
