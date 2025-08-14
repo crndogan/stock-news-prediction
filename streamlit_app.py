@@ -318,7 +318,7 @@ else:
 st.markdown('<div class="section-title">Topic Trends WordCloud</div>', unsafe_allow_html=True)
 
 def _pick(df, candidates):
-    """return the first existing column (case-insensitive) from candidates"""
+    """Return the first existing column (case-insensitive) from candidates."""
     lower = {c.lower(): c for c in df.columns}
     for name in candidates:
         if name in lower:
@@ -328,71 +328,86 @@ def _pick(df, candidates):
 if not wordcloud_df.empty:
     wc_raw = wordcloud_df.copy()
 
-    # Try to standardize common column names
+    # ---- standardize column names ----
     word_col  = _pick(wc_raw, ["word", "token", "term", "keyword"])
     label_col = _pick(wc_raw, ["label", "direction", "trend", "class"])
     count_col = _pick(wc_raw, ["count", "freq", "frequency", "weight"])
     date_col  = _pick(wc_raw, ["date", "day", "dt"])
 
-    # If we still don't have the essentials, tell the user what's missing
     if word_col is None or label_col is None:
         st.warning(
-            "Wordcloud data loaded but missing required columns. "
-            f"Found columns: {list(wc_raw.columns)}. "
-            "Expected something like word/token/term and label/direction/trend."
+            "Wordcloud CSV is loaded but missing required columns. "
+            f"Found: {list(wc_raw.columns)} — need word/token and label/direction."
         )
     else:
         wc = wc_raw[[c for c in [word_col, label_col, count_col, date_col] if c is not None]].copy()
         wc.rename(columns={word_col: "word", label_col: "label"}, inplace=True)
-        if count_col:
-            wc.rename(columns={count_col: "count"}, inplace=True)
-        else:
-            wc["count"] = 1
+        if count_col: wc.rename(columns={count_col: "count"}, inplace=True)
+        else: wc["count"] = 1
 
-        # Normalize text
         wc["word"]  = wc["word"].astype(str).str.strip()
         wc["label"] = wc["label"].astype(str).str.strip().str.lower()
 
-        # Map many possible label spellings to up/down
-        up_aliases   = {"up", "increase", "increasing", "rise", "rising", "bull", "bullish", "positive", "green"}
-        down_aliases = {"down", "decrease", "decreasing", "fall", "falling", "bear", "bearish", "negative", "red"}
-        wc["label"] = np.where(wc["label"].isin(up_aliases), "up",
-                        np.where(wc["label"].isin(down_aliases), "down", wc["label"]))
+        # Map common synonyms to up/down
+        up_alias   = {"up","increase","increasing","rise","rising","bull","bullish","positive","green","upward"}
+        down_alias = {"down","decrease","decreasing","fall","falling","bear","bearish","negative","red","downward"}
+        wc["label"] = np.where(wc["label"].isin(up_alias), "up",
+                        np.where(wc["label"].isin(down_alias), "down", wc["label"]))
 
-        # Date filter if we have a date column
+        # ---- date filter (7-day window); if empty, fall back to all-time ----
+        filtered_wc = wc.copy()
+        used_window = False
         if date_col:
             wc.rename(columns={date_col: "date"}, inplace=True)
             wc["date"] = pd.to_datetime(wc["date"], errors="coerce").dt.normalize()
             mask = (wc["date"] >= last_7_days) & (wc["date"] <= anchor_date)
-            wc = wc[mask]
+            filtered_wc = wc[mask]
+            used_window = True
 
-        # Aggregate frequencies
-        up_freq   = wc.loc[wc["label"] == "up"].groupby("word")["count"].sum().to_dict()
-        down_freq = wc.loc[wc["label"] == "down"].groupby("word")["count"].sum().to_dict()
+        # If the window is empty (no up/down words), show all-time instead
+        def _freqs(df):
+            up_f   = df.loc[df["label"] == "up"].groupby("word")["count"].sum().to_dict()
+            down_f = df.loc[df["label"] == "down"].groupby("word")["count"].sum().to_dict()
+            return up_f, down_f
 
+        up_freq, down_freq = _freqs(filtered_wc)
+        window_empty = (len(up_freq) == 0 and len(down_freq) == 0)
+
+        if window_empty:
+            up_freq, down_freq = _freqs(wc)  # all-time fallback
+
+        # ---- render clouds ----
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("Trending on Up Days")
             fig_up, ax_up = plt.subplots(figsize=(6, 4))
             wc_up = WordCloud(background_color="white", colormap="Greens") \
-                        .generate_from_frequencies(up_freq if len(up_freq) else {"NoData": 1})
+                    .generate_from_frequencies(up_freq if up_freq else {"NoData": 1})
             ax_up.imshow(wc_up, interpolation="bilinear"); ax_up.axis("off")
             st.pyplot(fig_up)
         with col2:
             st.subheader("Trending on Down Days")
             fig_down, ax_down = plt.subplots(figsize=(6, 4))
             wc_down = WordCloud(background_color="white", colormap="Reds") \
-                        .generate_from_frequencies(down_freq if len(down_freq) else {"NoData": 1})
+                    .generate_from_frequencies(down_freq if down_freq else {"NoData": 1})
             ax_down.imshow(wc_down, interpolation="bilinear"); ax_down.axis("off")
             st.pyplot(fig_down)
 
-        # Compact debug so you can see why it's empty when it is
-        total_rows = len(wc)
-        lbl_counts = wc["label"].value_counts().to_dict() if "label" in wc else {}
-        date_range = f"{wc['date'].min().date()} → {wc['date'].max().date()}" if 'date' in wc and not wc.empty else "n/a"
-        st.caption(f"Wordcloud rows in window: {total_rows} • labels: {lbl_counts} • date range: {date_range}")
+        # ---- compact debug so you can verify quickly ----
+        def _range(df):
+            if "date" in df and not df["date"].isna().all() and len(df) > 0:
+                return f"{df['date'].min().date()} → {df['date'].max().date()}"
+            return "n/a"
+        st.caption(
+            f"Wordcloud rows total: {len(wc)} • in 7‑day window: {len(filtered_wc) if used_window else 'n/a'} • "
+            f"labels total: {wc['label'].value_counts().to_dict()} • "
+            f"window labels: {filtered_wc['label'].value_counts().to_dict() if used_window else 'n/a'} • "
+            f"date range: {_range(wc)}"
+            + (" • (No words in window → showing all‑time)" if window_empty and used_window else "")
+        )
 else:
-    st.warning("No wordcloud CSV found. Expected notebooks/wordcloud.csv or topic_up_down.csv.")
+    st.warning("No wordcloud data loaded. Expected notebooks/wordcloud.csv (or topic_up_down.csv).")
+
 
 
 # FOOTER
