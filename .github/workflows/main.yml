@@ -2,7 +2,7 @@ name: Daily Stock News Modeling
 
 on:
   schedule:
-    - cron: '0 6 * * *'    # 11 PM Pacific (06:00 UTC)
+    - cron: '0 6 * * *'
   workflow_dispatch: {}
 
 jobs:
@@ -29,7 +29,6 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements-pipeline.txt
 
-      # Optional but recommended: cache NLTK corpora between runs
       - name: Cache NLTK data
         uses: actions/cache@v4
         with:
@@ -38,7 +37,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nltk-
 
-      - name: Download NLTK & TextBlob corpora (non-interactive, with retries)
+      - name: Download NLTK & TextBlob corpora
         env:
           NLTK_DATA: ${{ github.workspace }}/nltk_data
         run: |
@@ -46,15 +45,11 @@ jobs:
           import os, time
           import nltk
           from textblob import download_corpora
-
-          # ensure local data dir & path
           data_dir = os.environ.get("NLTK_DATA", "./nltk_data")
           os.makedirs(data_dir, exist_ok=True)
           if data_dir not in nltk.data.path:
             nltk.data.path.append(data_dir)
-
           pkgs = ["punkt","stopwords","vader_lexicon","averaged_perceptron_tagger","wordnet"]
-
           for p in pkgs:
             for attempt in range(3):
               try:
@@ -65,15 +60,13 @@ jobs:
                 if attempt == 2:
                   raise
               time.sleep(3 * (attempt + 1))
-
-          # TextBlob corpora
-          download_corpora()
+          download_corpora.download_all()
           PY
 
       - name: Export API Key to environment
         run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
 
-      - name: Execute Master Notebook (force full rerun)
+      - name: Execute Master Notebook
         run: |
           mkdir -p notebooks
           jupyter nbconvert \
