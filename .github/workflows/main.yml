@@ -19,8 +19,7 @@ jobs:
           python-version: '3.10'
 
       - name: Upgrade pip
-        run: |
-          python -m pip install --upgrade pip
+        run: python -m pip install --upgrade pip
 
       - name: Register Python kernel for Jupyter
         run: |
@@ -28,20 +27,48 @@ jobs:
           python -m ipykernel install --user --name=python3
 
       - name: Install Python dependencies
-        run: |
-          pip install -r requirements-pipeline.txt
+        run: pip install -r requirements-pipeline.txt
 
-      - name: Download NLTK & TextBlob corpora
+      # Optional but recommended: cache NLTK corpora between runs
+      - name: Cache NLTK data
+        uses: actions/cache@v4
+        with:
+          path: nltk_data
+          key: ${{ runner.os }}-nltk-${{ hashFiles('requirements-pipeline.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-nltk-
+
+      - name: Download NLTK & TextBlob corpora (non-interactive, with retries)
+        env:
+          NLTK_DATA: ${{ github.workspace }}/nltk_data
         run: |
-          python - <<EOF
-          import nltk, textblob
-          nltk.download("punkt", quiet=True)
-          nltk.download("stopwords", quiet=True)
-          nltk.download("vader_lexicon", quiet=True)
-          nltk.download("averaged_perceptron_tagger", quiet=True)
-          nltk.download("wordnet", quiet=True)
-          textblob.download_corpora()
-          EOF
+          python - <<'PY'
+          import os, time
+          import nltk
+          from textblob import download_corpora
+
+          # ensure local data dir & path
+          data_dir = os.environ.get("NLTK_DATA", "./nltk_data")
+          os.makedirs(data_dir, exist_ok=True)
+          if data_dir not in nltk.data.path:
+            nltk.data.path.append(data_dir)
+
+          pkgs = ["punkt","stopwords","vader_lexicon","averaged_perceptron_tagger","wordnet"]
+
+          for p in pkgs:
+            for attempt in range(3):
+              try:
+                ok = nltk.download(p, download_dir=data_dir, quiet=True)
+                if ok:
+                  break
+              except Exception:
+                if attempt == 2:
+                  raise
+              time.sleep(3 * (attempt + 1))
+
+          # TextBlob corpora
+          download_corpora()
+          PY
 
       - name: Export API Key to environment
         run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
