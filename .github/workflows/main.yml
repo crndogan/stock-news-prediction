@@ -18,6 +18,10 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Upgrade pip
+        run: |
+          python -m pip install --upgrade pip
+
       - name: Register Python kernel for Jupyter
         run: |
           pip install notebook ipykernel
@@ -29,8 +33,15 @@ jobs:
 
       - name: Download NLTK & TextBlob corpora
         run: |
-          python -m nltk.downloader punkt stopwords vader_lexicon averaged_perceptron_tagger wordnet
-          python -m textblob.download_corpora
+          python - <<EOF
+          import nltk, textblob
+          nltk.download("punkt", quiet=True)
+          nltk.download("stopwords", quiet=True)
+          nltk.download("vader_lexicon", quiet=True)
+          nltk.download("averaged_perceptron_tagger", quiet=True)
+          nltk.download("wordnet", quiet=True)
+          textblob.download_corpora()
+          EOF
 
       - name: Export API Key to environment
         run: echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
@@ -64,4 +75,3 @@ jobs:
           git add runtime.txt
           git commit -m "chore: pin Streamlit Cloud to Python 3.10 for SciPy compatibility" || echo "No changes to commit"
           git push
-
