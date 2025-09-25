@@ -49,7 +49,14 @@ jobs:
           os.makedirs(data_dir, exist_ok=True)
           if data_dir not in nltk.data.path:
             nltk.data.path.append(data_dir)
-          pkgs = ["punkt","stopwords","vader_lexicon","averaged_perceptron_tagger","wordnet"]
+          pkgs = [
+            "punkt",
+            "punkt_tab",
+            "stopwords",
+            "vader_lexicon",
+            "averaged_perceptron_tagger",
+            "wordnet"
+          ]
           for p in pkgs:
             for attempt in range(3):
               try:
