@@ -76,6 +76,15 @@ jobs:
       - name: Execute Master Notebook
         run: |
           mkdir -p notebooks
+          python - <<'PY'
+          import nltk
+          from textblob import download_corpora
+          nltk.download("punkt")
+          nltk.download("punkt_tab")
+          nltk.download("stopwords")
+          nltk.download("wordnet")
+          download_corpora.download_all()
+          PY
           jupyter nbconvert \
             --to notebook \
             --execute notebooks/Master_Data_Modeling.ipynb \
@@ -100,5 +109,5 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git add notebooks/Master_Data_Modeling_output.ipynb notebooks/*.csv *.xlsx *.txt
           git add runtime.txt
-          git commit -m "chore: pin Streamlit Cloud to Python 3.10 for SciPy compatibility" || echo "No changes to commit"
+          git commit -m "chore: ensure punkt corpora available for TextBlob/NRCLex" || echo "No changes to commit"
           git push
