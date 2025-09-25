@@ -578,7 +578,6 @@ date,word,label,count
 2025-07-22,care,Up,1
 2025-07-22,carter,Up,1
 2025-07-22,cash,Up,1
-2025-07-22,cass,Up,1
 2025-07-22,catalog,Up,1
 2025-07-22,caterpillar,Up,1
 2025-07-22,cemex,Up,1
@@ -5095,7 +5094,7 @@ date,word,label,count
 2025-07-25,worth,Up,1
 2025-07-25,wrestling,Up,1
 2025-07-25,yollari,Up,1
-2025-07-28,share,Down,82
+2025-07-28,share,Down,83
 2025-07-28,gaza,Down,68
 2025-07-28,death,Down,66
 2025-07-28,starved,Down,66
@@ -5103,7 +5102,6 @@ date,word,label,count
 2025-07-28,epstein,Down,49
 2025-07-28,investment,Down,48
 2025-07-28,controversy,Down,47
-2025-07-28,less,Down,47
 2025-07-28,ally,Down,46
 2025-07-28,born,Down,46
 2025-07-28,child,Down,46
@@ -5141,8 +5139,8 @@ date,word,label,count
 2025-07-28,part,Down,16
 2025-07-28,ishares,Down,15
 2025-07-28,trade,Down,15
+2025-07-28,acquires,Down,14
 2025-07-28,sold,Down,14
-2025-07-28,acquires,Down,13
 2025-07-28,buy,Down,13
 2025-07-28,regulation,Down,13
 2025-07-28,sell,Down,13
@@ -5169,6 +5167,7 @@ date,word,label,count
 2025-07-28,associate,Down,8
 2025-07-28,vanguard,Down,8
 2025-07-28,capital,Down,7
+2025-07-28,finance,Down,7
 2025-07-28,international,Down,7
 2025-07-28,investimentos,Down,7
 2025-07-28,invests,Down,7
@@ -5188,7 +5187,6 @@ date,word,label,count
 2025-07-28,department,Down,6
 2025-07-28,education,Down,6
 2025-07-28,energy,Down,6
-2025-07-28,finance,Down,6
 2025-07-28,grant,Down,6
 2025-07-28,growth,Down,6
 2025-07-28,msci,Down,6
@@ -5234,6 +5232,7 @@ date,word,label,count
 2025-07-28,call,Down,3
 2025-07-28,crown,Down,3
 2025-07-28,electric,Down,3
+2025-07-28,empirical,Down,3
 2025-07-28,face,Down,3
 2025-07-28,fair,Down,3
 2025-07-28,illinois,Down,3
@@ -5297,7 +5296,6 @@ date,word,label,count
 2025-07-28,dresser,Down,2
 2025-07-28,eafe,Down,2
 2025-07-28,eagle,Down,2
-2025-07-28,empirical,Down,2
 2025-07-28,equifax,Down,2
 2025-07-28,ethic,Down,2
 2025-07-28,executive,Down,2
@@ -5553,6 +5551,7 @@ date,word,label,count
 2025-07-28,detention,Down,1
 2025-07-28,dickinson,Down,1
 2025-07-28,didnt,Down,1
+2025-07-28,dimension,Down,1
 2025-07-28,direction,Down,1
 2025-07-28,discretionary,Down,1
 2025-07-28,discus,Down,1
@@ -5599,6 +5598,7 @@ date,word,label,count
 2025-07-28,faro,Down,1
 2025-07-28,fascist,Down,1
 2025-07-28,fee,Down,1
+2025-07-28,fidelity,Down,1
 2025-07-28,file,Down,1
 2025-07-28,fitness,Down,1
 2025-07-28,fleeing,Down,1
@@ -5651,6 +5651,7 @@ date,word,label,count
 2025-07-28,incorporated,Down,1
 2025-07-28,indecent,Down,1
 2025-07-28,industry,Down,1
+2025-07-28,infor,Down,1
 2025-07-28,insightful,Down,1
 2025-07-28,insurer,Down,1
 2025-07-28,integrate,Down,1
@@ -5720,6 +5721,7 @@ date,word,label,count
 2025-07-28,multisector,Down,1
 2025-07-28,musk,Down,1
 2025-07-28,myers,Down,1
+2025-07-28,nano,Down,1
 2025-07-28,nasdaq,Down,1
 2025-07-28,nasdaqadbe,Down,1
 2025-07-28,nasdaqbkng,Down,1
@@ -5734,6 +5736,7 @@ date,word,label,count
 2025-07-28,nasdaqintu,Down,1
 2025-07-28,nasdaqisrg,Down,1
 2025-07-28,nasdaqmrvl,Down,1
+2025-07-28,nasdaqnndm,Down,1
 2025-07-28,nasdaqpcar,Down,1
 2025-07-28,nasdaqpowl,Down,1
 2025-07-28,nasdaqptc,Down,1
@@ -5745,6 +5748,7 @@ date,word,label,count
 2025-07-28,nasdaqstld,Down,1
 2025-07-28,nasdaqtsla,Down,1
 2025-07-28,nasdaqwday,Down,1
+2025-07-28,national,Down,1
 2025-07-28,nationalism,Down,1
 2025-07-28,nea,Down,1
 2025-07-28,neo,Down,1

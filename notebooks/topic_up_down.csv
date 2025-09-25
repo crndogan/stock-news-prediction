@@ -525,7 +525,6 @@ district,4,Up
 councilor,1,Up
 boston,4,Up
 mass,3,Up
-cass,1,Up
 drug,4,Up
 crisis,3,Up
 worsening,1,Up
@@ -3874,7 +3873,7 @@ scale,38,Down
 business,40,Down
 kpn,2,Down
 completes,2,Down
-share,82,Down
+share,83,Down
 buyback,2,Down
 walmart,3,Down
 selling,6,Down
@@ -4003,7 +4002,6 @@ automation,1,Down
 era,1,Down
 close,1,Down
 heloc,1,Down
-less,47,Down
 administration,1,Down
 approves,1,Down
 controversial,1,Down
@@ -4030,8 +4028,8 @@ cosmcs,1,Down
 spinoff,1,Down
 restaurant,1,Down
 longbow,3,Down
-finance,6,Down
-acquires,13,Down
+finance,7,Down
+acquires,14,Down
 abbvie,3,Down
 nyseabbv,3,Down
 prospect,1,Down
@@ -4674,7 +4672,7 @@ nysecah,1,Down
 otis,1,Down
 worldwide,1,Down
 nyseotis,1,Down
-empirical,2,Down
+empirical,3,Down
 nasdaqtsla,1,Down
 paccar,1,Down
 nasdaqpcar,1,Down
@@ -4710,3 +4708,9 @@ line,1,Down
 nysedal,1,Down
 faro,1,Down
 nasdaqfaro,1,Down
+nano,1,Down
+dimension,1,Down
+nasdaqnndm,1,Down
+fidelity,1,Down
+national,1,Down
+infor,1,Down
