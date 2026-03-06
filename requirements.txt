@@ -12,4 +12,4 @@ notebook
 ipykernel
 nltk==3.8.1
 textblob
-nrclex
+nrclex==3.0.0
